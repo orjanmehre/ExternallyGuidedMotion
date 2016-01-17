@@ -6,6 +6,7 @@ using abb.egm;
 using System.Diagnostics;
 using ExternalGuidedMotion;
 using System.Threading;
+using System.Windows.Forms;
 
 
 
@@ -63,15 +64,23 @@ namespace ExternalGuidedMotion
     class Program
     {
         // listen on this port for inbound messages
-        public static int _ipPortNumber = 6510;  
+        public static int _ipPortNumber = 6510;
+        private static bool _exit = false;
 
         static void Main(string[] args)
         {
             //Sensor s = new Sensor();
             Path path = new Path();
 
+
+            path.Time();
+
             Console.WriteLine("Press any key to Exit");
             Console.ReadLine();
+            while (_exit == false)
+            {
+                Application.DoEvents();
+            }
         }
     }
 
