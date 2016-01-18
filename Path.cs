@@ -1,42 +1,43 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 
 
 /// This class generate simulated position data for a object sliding down a ramp.
+/// The data that is generated is in one dimmension.
 /// This data is used in simulation and testing. 
 
 namespace ExternalGuidedMotion
 {
     public class Path
     {
-        public const double WEIGHT = 0.01;
-        public const double ANGLE = 1;
+        public const double ANGLE = 30;
         public int i = 1;
 
 
         public void Time()
         {
             Timer timer = new Timer();
-            timer.Interval = 30;
+            timer.Interval = 33; // 30fps
             timer.Start();
             timer.Tick += TimerCallback_Handler; 
         }
 
         public void TimerCallback_Handler(object sender, EventArgs args)
         {
-            double time = 30 * i;
+            double time = (double)(30 * i)/1000; // in sec
             double speed = CalculateSpeed(time); 
             double position = CalculatePosition(speed, time);
             Console.WriteLine(speed.ToString() + " " + position.ToString());
+            Debug.WriteLine("Speed: " + String.Format("{0:0.0000}" ,speed)+ " | Time: " + String.Format("{0:0.0000}", time) + " | Pos: " + String.Format("{0:0.0000}", position));
             i++; 
         }
 
         public double CalculateSpeed(double time)
         {
-            double forceAccel = WEIGHT * 9.81 * Math.Sin(ANGLE);
-            double acceleration = WEIGHT / forceAccel;
-            double speed = acceleration * time;
+            double acceleration = 9.81 * Math.Sin(ANGLE * Math.PI/180);
+            double speed = acceleration * time; 
             return speed;
         }
 

@@ -71,16 +71,13 @@ namespace ExternalGuidedMotion
         {
             //Sensor s = new Sensor();
             Path path = new Path();
-
-
             path.Time();
 
-            Console.WriteLine("Press any key to Exit");
-            Console.ReadLine();
             while (_exit == false)
             {
                 Application.DoEvents();
             }
+            Console.ReadLine();
         }
     }
 
