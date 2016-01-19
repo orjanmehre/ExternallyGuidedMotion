@@ -19,14 +19,16 @@ namespace ExternalGuidedMotion
         public void Time()
         {
             Timer timer = new Timer();
-            timer.Interval = 33; // 30fps
+            // 30fps.
+            timer.Interval = 33; 
             timer.Start();
             timer.Tick += TimerCallback_Handler; 
         }
 
         public void TimerCallback_Handler(object sender, EventArgs args)
         {
-            double time = (double)(30 * i)/1000; // in sec
+            // In sec.
+            double time = (double)(30 * i)/1000; 
             double speed = CalculateSpeed(time); 
             double position = CalculatePosition(speed, time);
             Console.WriteLine(speed.ToString() + " " + position.ToString());
