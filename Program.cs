@@ -69,14 +69,9 @@ namespace ExternalGuidedMotion
 
         static void Main(string[] args)
         {
-            //Sensor s = new Sensor();
-            Path path = new Path();
-            path.Time();
+            Sensor s = new Sensor();
+            Path path = new Path(s);
 
-            while (_exit == false)
-            {
-                Application.DoEvents();
-            }
             Console.ReadLine();
         }
     }
@@ -88,8 +83,8 @@ namespace ExternalGuidedMotion
         private bool _exitThread = false;
         private uint _seqNumber = 0;
 
-        public float X { get; set; }
-        public float Y { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
           
 
         public void SensorThread()
@@ -101,6 +96,7 @@ namespace ExternalGuidedMotion
             while (_exitThread == false)
             {
                 
+
                 // get the message from robot
                 var data = _udpServer.Receive(ref remoteEP);
 
@@ -164,8 +160,8 @@ namespace ExternalGuidedMotion
             EgmPose.Builder pos = new EgmPose.Builder();
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
-  
-            pc.SetX(0)
+            //Debug.WriteLine(this.X.ToString());
+            pc.SetX(this.X)
               .SetY(0)
               .SetZ(0);
 
@@ -187,7 +183,7 @@ namespace ExternalGuidedMotion
         public void Start()
         {
             _sensorThread = new Thread(new ThreadStart(SensorThread));
-            _sensorThread.Start();
+            _sensorThread.Start(); 
         }
 
         // Stop and exit thread
