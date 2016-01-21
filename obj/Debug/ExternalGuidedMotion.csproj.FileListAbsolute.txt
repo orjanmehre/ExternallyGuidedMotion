@@ -6,3 +6,4 @@
 \\mac\home\documents\visual studio 2015\Projects\ExternalGuidedMotion\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csprojResolveAssemblyReference.cache
 \\mac\home\documents\visual studio 2015\Projects\ExternalGuidedMotion\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.dll
 \\mac\home\documents\visual studio 2015\Projects\ExternalGuidedMotion\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.dll
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\ExternalGuidedMotion.exe.config
