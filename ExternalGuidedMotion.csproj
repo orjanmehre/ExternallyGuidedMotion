@@ -49,10 +49,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.ProtocolBuffers">
-      <HintPath>\\Mac\Dropbox\ELE630 - EGM prosjekt\Program\C# Kinect\bin\Debug\Google.ProtocolBuffers.dll</HintPath>
+      <HintPath>..\..\..\Dropbox\ELE630 - EGM prosjekt\Program\C# Glider\bin\Debug\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
     <Reference Include="Google.ProtocolBuffers.Serialization">
-      <HintPath>\\Mac\Dropbox\ELE630 - EGM prosjekt\Program\C# Kinect\bin\Debug\Google.ProtocolBuffers.Serialization.dll</HintPath>
+      <HintPath>..\..\..\Dropbox\ELE630 - EGM prosjekt\Program\C# Glider\bin\Debug\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

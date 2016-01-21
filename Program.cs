@@ -71,7 +71,6 @@ namespace ExternalGuidedMotion
         {
             Sensor s = new Sensor();
             Path path = new Path(s);
-
             Console.ReadLine();
         }
     }
@@ -82,23 +81,23 @@ namespace ExternalGuidedMotion
         private UdpClient _udpServer = null;
         private bool _exitThread = false;
         private uint _seqNumber = 0;
-
+       
         public double X { get; set; }
         public double Y { get; set; }
-          
+        
 
         public void SensorThread()
         {
             // create an udp client and listen on any address and the port _ipPortNumber
             _udpServer = new UdpClient(Program._ipPortNumber);
             var remoteEP = new IPEndPoint(IPAddress.Any, Program._ipPortNumber);
-
+            
             while (_exitThread == false)
             {
                 
-
                 // get the message from robot
                 var data = _udpServer.Receive(ref remoteEP);
+               
 
                 if (data != null)
                 {

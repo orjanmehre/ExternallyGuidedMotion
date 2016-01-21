@@ -7,3 +7,12 @@
 \\mac\home\documents\visual studio 2015\Projects\ExternalGuidedMotion\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.dll
 \\mac\home\documents\visual studio 2015\Projects\ExternalGuidedMotion\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.dll
 C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\ExternalGuidedMotion.exe.config
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csprojResolveAssemblyReference.cache
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\ExternalGuidedMotion.exe
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\ExternalGuidedMotion.pdb
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.dll
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.dll
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.xml
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.xml
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.exe
+C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.pdb

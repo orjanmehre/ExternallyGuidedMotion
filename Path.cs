@@ -14,14 +14,13 @@ namespace ExternalGuidedMotion
     {
         public const double ANGLE = 30;
         public int i = 1;
-        Sensor abbSensor = null;
+        Sensor abbSensor = new Sensor();
 
         public Path(Sensor abbSensor)
         {
-            this.abbSensor = abbSensor;
-            this.abbSensor.Start();
-            Time();
+            abbSensor.Start();
         }
+
         public void Time()
         {
             Timer timer = new Timer();
@@ -38,7 +37,6 @@ namespace ExternalGuidedMotion
             double speed = CalculateSpeed(time); 
             double position = CalculatePosition(speed, time);
             double X = position;
-            Console.WriteLine(speed.ToString() + " " + position.ToString());
             Debug.WriteLine("Speed: " + String.Format("{0:0.0000}" ,speed)+ " | Time: " + String.Format("{0:0.0000}", time) + " | Pos: " + String.Format("{0:0.0000}", position));
             abbSensor.X = X;
             i++; 
