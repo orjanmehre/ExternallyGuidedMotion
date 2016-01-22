@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 
 
@@ -14,32 +15,14 @@ namespace ExternalGuidedMotion
     {
         public const double ANGLE = 30;
         public int i = 1;
-        Sensor abbSensor = new Sensor();
-
-        public Path(Sensor abbSensor)
+        
+        public void Time(Object stateInfo)
         {
-            abbSensor.Start();
-        }
-
-        public void Time()
-        {
-            Timer timer = new Timer();
-            // 30fps.
-            timer.Interval = 33; 
-            timer.Start();
-            timer.Tick += TimerCallback_Handler; 
-        }
-
-        public void TimerCallback_Handler(object sender, EventArgs args)
-        {
-            // In sec.
-            double time = (double)(30 * i)/1000; 
-            double speed = CalculateSpeed(time); 
+            double time = (double)(30 * i) / 1000;
+            double speed = CalculateSpeed(time);
             double position = CalculatePosition(speed, time);
-            double X = position;
-            Debug.WriteLine("Speed: " + String.Format("{0:0.0000}" ,speed)+ " | Time: " + String.Format("{0:0.0000}", time) + " | Pos: " + String.Format("{0:0.0000}", position));
-            abbSensor.X = X;
-            i++; 
+            Debug.WriteLine("Time: " + time.ToString() +  " Pos: " + position.ToString());
+            i++;
         }
 
         public double CalculateSpeed(double time)

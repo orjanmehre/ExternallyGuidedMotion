@@ -6,7 +6,7 @@ using abb.egm;
 using System.Diagnostics;
 using ExternalGuidedMotion;
 using System.Threading;
-using System.Windows.Forms;
+
 
 
 
@@ -70,7 +70,7 @@ namespace ExternalGuidedMotion
         static void Main(string[] args)
         {
             Sensor s = new Sensor();
-            Path path = new Path(s);
+            s.Start();
             Console.ReadLine();
         }
     }
@@ -79,9 +79,10 @@ namespace ExternalGuidedMotion
     {
         private Thread _sensorThread = null;
         private UdpClient _udpServer = null;
-        private bool _exitThread = false;
+        public bool exitThread = false;
         private uint _seqNumber = 0;
-       
+        Path path = new Path();
+        
         public double X { get; set; }
         public double Y { get; set; }
         
@@ -91,16 +92,23 @@ namespace ExternalGuidedMotion
             // create an udp client and listen on any address and the port _ipPortNumber
             _udpServer = new UdpClient(Program._ipPortNumber);
             var remoteEP = new IPEndPoint(IPAddress.Any, Program._ipPortNumber);
+            TimerCallback tcb = path.Time;
+            bool isFirstLoop = true;
             
-            while (_exitThread == false)
+            while (exitThread == false)
             {
                 
                 // get the message from robot
                 var data = _udpServer.Receive(ref remoteEP);
-               
 
                 if (data != null)
                 {
+                    if (isFirstLoop == true)
+                    {
+                        Timer timer = new Timer(tcb, exitThread, 60, 33);
+                        isFirstLoop = false; 
+                    }
+
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
 
@@ -160,6 +168,7 @@ namespace ExternalGuidedMotion
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
             //Debug.WriteLine(this.X.ToString());
+ 
             pc.SetX(this.X)
               .SetY(0)
               .SetZ(0);
@@ -188,7 +197,7 @@ namespace ExternalGuidedMotion
         // Stop and exit thread
         public void Stop()
         {
-            _exitThread = true;
+            exitThread = true;
             _sensorThread.Abort();
         }
 
