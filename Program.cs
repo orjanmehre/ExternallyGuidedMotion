@@ -82,8 +82,9 @@ namespace ExternalGuidedMotion
         public bool exitThread = false;
         private uint _seqNumber = 0;
         Path path = new Path();
-        
-        public double X { get; set; }
+
+        int X = new Random().Next(0, 301);
+
         public double Y { get; set; }
         
 
@@ -167,10 +168,17 @@ namespace ExternalGuidedMotion
             EgmPose.Builder pos = new EgmPose.Builder();
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
-            //Debug.WriteLine(this.X.ToString());
- 
+            
+            this.Y = path.position;
+
+            if (Y > 2.0)
+            {
+                Y = 2; 
+            }
+
+            Debug.WriteLine("Y= " + this.Y.ToString());
             pc.SetX(this.X)
-              .SetY(0)
+              .SetY(this.Y)
               .SetZ(0);
 
             pq.SetU0(0.0)

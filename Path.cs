@@ -15,12 +15,13 @@ namespace ExternalGuidedMotion
     {
         public const double ANGLE = 30;
         public int i = 1;
+        public double position { get; set; }
         
         public void Time(Object stateInfo)
         {
             double time = (double)(30 * i) / 1000;
             double speed = CalculateSpeed(time);
-            double position = CalculatePosition(speed, time);
+            position = CalculatePosition(speed, time);
             Debug.WriteLine("Time: " + time.ToString() +  " Pos: " + position.ToString());
             i++;
         }
