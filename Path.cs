@@ -22,8 +22,7 @@ namespace ExternalGuidedMotion
         {
             time = (double)(33 * i) / 1000;
             double speed = CalculateSpeed(time);
-            position = CalculatePosition(speed, time);
-            Debug.WriteLine("Time: " + time.ToString() +  " Pos: " + position.ToString());
+            position = CalculatePosition(speed, time);    
             i++;
         }
 

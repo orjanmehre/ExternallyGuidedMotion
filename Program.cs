@@ -91,7 +91,10 @@ namespace ExternalGuidedMotion
         public bool exitThread = false;
         private uint _seqNumber = 0;
         Path path = new Path();
-        TextWriter positionfile = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", true);
+
+        // Write poisition data to txt file for plotting
+        TextWriter positionfile = new StreamWriter
+            (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", false);
 
         public DateTime startTime = DateTime.Now;
         int X = new Random().Next(0, 301);
@@ -130,21 +133,17 @@ namespace ExternalGuidedMotion
 
                     // display inbound message
                     DisplayInboundMessage(robot);
+                    //Debug.WriteLine(robot.ToString());
 
                     xRobot = robot.FeedBack.Cartesian.Pos.X;
                     yRobot = robot.FeedBack.Cartesian.Pos.Y;
                     zRobot = robot.FeedBack.Cartesian.Pos.Z;
 
-                    Debug.WriteLine(robot.ToString());
+                    
                     // create a new outbound sensor message
                     EgmSensor.Builder sensor = EgmSensor.CreateBuilder();
                     CreateSensorMessage(sensor);
-
-                    Debug.WriteLine(sensor.ToString());
-
-                    positionfile.WriteLine(path.time.ToString() + " " + 
-                        sensor.Planned.Cartesian.Pos.X.ToString() + " " + 
-                        robot.FeedBack.Cartesian.Pos.X.ToString());
+                    //Debug.WriteLine(sensor.ToString());
 
                     using (MemoryStream memoryStream = new MemoryStream())
                     {
@@ -160,6 +159,14 @@ namespace ExternalGuidedMotion
                             Console.WriteLine("Error send to robot");
                         }
                     }
+
+                    //Write position data to txt file
+                    positionfile.WriteLine("T: " + path.time.ToString() + "X: " +
+                        sensor.Planned.Cartesian.Pos.X.ToString() + "Y: " + 
+                        sensor.Planned.Cartesian.Pos.Y.ToString() + "X: " +
+                        robot.FeedBack.Cartesian.Pos.X.ToString() + "Y: " +
+                        robot.FeedBack.Cartesian.Pos.Y.ToString() + "Z: " +
+                        robot.FeedBack.Cartesian.Pos.X.ToString());
                 }
             }
         }
@@ -206,7 +213,6 @@ namespace ExternalGuidedMotion
             }
 
 
-            rotationTranslation(0, 2.61799388, 0.523598776);
             pc.SetX(this.Y)
               .SetY(-this.X)
               .SetZ(0);
@@ -239,48 +245,6 @@ namespace ExternalGuidedMotion
             positionfile.Close();
             exitThread = true;
             _sensorThread.Abort();
-        }
-
-        
-       
-
-        public void rotationTranslation(double xRad, double yRad, double zRad)
-        {
-            var oldRobotCord = new double[4, 1] { { xRobot }, { yRobot }, { zRobot }, { 0 } };
-
-            double xtrans = xRobot * 83.66399492;
-            double ytrans = yRobot * -716.879172118;
-            double ztrans = zRobot * 531.771925931;
-
-            var transRobCord = new double[4, 1] { { xtrans }, { ytrans }, { ztrans }, { 0 } };
-
-            double cosX = (double)Math.Cos(xRad);
-            double sinX = (double)Math.Sin(xRad);
-
-            double cosY = (double)Math.Cos(yRad);
-            double sinY = (double)Math.Sin(yRad);
-
-            double cosZ = (double)Math.Cos(zRad);
-            double sinZ = (double)Math.Sin(zRad);
-
-            var matrix = new double[4, 4] { {cosY*cosZ, -cosY*sinZ, sinY, 0 },
-                {(cosX*sinZ) + (sinX*sinY*cosZ), (cosX*cosZ) - (sinX*sinY*sinZ), -sinX*cosY, 0  },
-                {(sinX*sinZ) - (cosX*sinY*cosZ), (sinX*cosZ) + (cosX*sinY*sinZ), cosX*cosY, 0 },
-                {0,0,0,1 }};
-
-            var rotationTranslation = new double[4, 1] { { 0 }, { 0 }, { 0 }, { 0 } };
-
-            for (int row = 0; row < 4; row++)
-            {
-                for (int col = 0; col < 1; col++)
-                {
-                    rotationTranslation[row, col] = 0;
-                    for (int inner = 0; inner < 3; inner++)
-                    {
-                        rotationTranslation[row, col] += matrix[row, inner] * oldRobotCord[inner, col];
-                    }
-                }
-            }
         }
     }  
 }
