@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using abb.egm;
 using System.Diagnostics;
 using System.Threading;
-using System.Numerics;
+using System.Windows.Media.Media3D;
 
 
 
@@ -133,7 +133,7 @@ namespace ExternalGuidedMotion
 
                     // display inbound message
                     DisplayInboundMessage(robot);
-                    //Debug.WriteLine(robot.ToString());
+                    Debug.WriteLine(robot.ToString());
 
                     xRobot = robot.FeedBack.Cartesian.Pos.X;
                     yRobot = robot.FeedBack.Cartesian.Pos.Y;
@@ -143,7 +143,7 @@ namespace ExternalGuidedMotion
                     // create a new outbound sensor message
                     EgmSensor.Builder sensor = EgmSensor.CreateBuilder();
                     CreateSensorMessage(sensor);
-                    //Debug.WriteLine(sensor.ToString());
+                    Debug.WriteLine(sensor.ToString());
 
                     using (MemoryStream memoryStream = new MemoryStream())
                     {
@@ -161,12 +161,12 @@ namespace ExternalGuidedMotion
                     }
 
                     //Write position data to txt file
-                    positionfile.WriteLine("T: " + path.time.ToString() + "X: " +
-                        sensor.Planned.Cartesian.Pos.X.ToString() + "Y: " + 
-                        sensor.Planned.Cartesian.Pos.Y.ToString() + "X: " +
-                        robot.FeedBack.Cartesian.Pos.X.ToString() + "Y: " +
-                        robot.FeedBack.Cartesian.Pos.Y.ToString() + "Z: " +
-                        robot.FeedBack.Cartesian.Pos.X.ToString());
+                    positionfile.WriteLine( path.time.ToString("#.###") + " " +
+                       sensor.Planned.Cartesian.Pos.X.ToString("#.###") + " " + 
+                       sensor.Planned.Cartesian.Pos.Y.ToString("#.###") + " " + 
+                       robot.FeedBack.Cartesian.Pos.X.ToString("#.###") + " " + 
+                       robot.FeedBack.Cartesian.Pos.Y.ToString("#.###") + " " + 
+                       robot.FeedBack.Cartesian.Pos.X.ToString("#.###"));
                 }
             }
         }
@@ -197,16 +197,16 @@ namespace ExternalGuidedMotion
 
             sensor.SetHeader(hdr);
             
-            
-
             // create some sensor data
             EgmPlanned.Builder planned = new EgmPlanned.Builder();
             EgmPose.Builder pos = new EgmPose.Builder();
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
-            
+
+            // To get the pos in mm
             this.Y = path.position * 1000;
 
+            // Set a limit for the robot down the ramp, to avoid "Mechanical unit close to joint bound"
             if (Y > 4000)
             {
                 Y = 4000; 
@@ -244,7 +244,7 @@ namespace ExternalGuidedMotion
         {
             positionfile.Close();
             exitThread = true;
-            _sensorThread.Abort();
+            _sensorThread.Abort();        
         }
     }  
 }
