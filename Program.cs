@@ -97,9 +97,9 @@ namespace ExternalGuidedMotion
             (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", false);
 
         public DateTime startTime = DateTime.Now;
-        int X = new Random().Next(0, 301);
+        int Y = new Random().Next(0, 301);
         int Z = 0; 
-        public double Y { get; set; }
+        public double X { get; set; }
 
         
 
@@ -210,18 +210,18 @@ namespace ExternalGuidedMotion
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
 
             // To get the pos in mm
-            this.Y = path.position * 1000;
+            this.X = path.position * 1000;
 
             // Set a limit for the robot down the ramp, to avoid "Mechanical unit close to joint bound"
-            if (Y > 4000)
+            if (X > 4000)
             {
-                Y = 4000; 
+                X = 4000; 
             }
 
 
-            pc.SetX(100)
-              .SetY(-20)
-              .SetZ(0);
+            pc.SetX(X)
+              .SetY(-Y)
+              .SetZ(Z);
 
             pq.SetU0(0.0)
               .SetU1(0.0)
