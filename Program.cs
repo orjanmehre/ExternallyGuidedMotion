@@ -98,8 +98,11 @@ namespace ExternalGuidedMotion
 
         public DateTime startTime = DateTime.Now;
         int X = new Random().Next(0, 301);
-       
+        int Z = 0; 
         public double Y { get; set; }
+
+        
+
         public double xRobot { get; set; }
         public double yRobot { get; set; }
         public double zRobot { get; set; }
@@ -133,7 +136,7 @@ namespace ExternalGuidedMotion
 
                     // display inbound message
                     DisplayInboundMessage(robot);
-                    Debug.WriteLine(robot.ToString());
+                    //Debug.WriteLine(robot.ToString());
 
                     xRobot = robot.FeedBack.Cartesian.Pos.X;
                     yRobot = robot.FeedBack.Cartesian.Pos.Y;
@@ -143,7 +146,7 @@ namespace ExternalGuidedMotion
                     // create a new outbound sensor message
                     EgmSensor.Builder sensor = EgmSensor.CreateBuilder();
                     CreateSensorMessage(sensor);
-                    Debug.WriteLine(sensor.ToString());
+                    //Debug.WriteLine(sensor.ToString());
 
                     using (MemoryStream memoryStream = new MemoryStream())
                     {
@@ -160,13 +163,16 @@ namespace ExternalGuidedMotion
                         }
                     }
 
+                    
+
                     //Write position data to txt file
-                    positionfile.WriteLine( path.time.ToString("#.###") + " " +
-                       sensor.Planned.Cartesian.Pos.X.ToString("#.###") + " " + 
-                       sensor.Planned.Cartesian.Pos.Y.ToString("#.###") + " " + 
-                       robot.FeedBack.Cartesian.Pos.X.ToString("#.###") + " " + 
-                       robot.FeedBack.Cartesian.Pos.Y.ToString("#.###") + " " + 
-                       robot.FeedBack.Cartesian.Pos.X.ToString("#.###"));
+                    positionfile.WriteLine( path.time.ToString("#.##") + " " +
+                       sensor.Planned.Cartesian.Pos.X.ToString("#.##") + " " + 
+                       sensor.Planned.Cartesian.Pos.Y.ToString("#.##") + " " + 
+                       sensor.Planned.Cartesian.Pos.Z.ToString()       + " " + 
+                       robot.FeedBack.Cartesian.Pos.X.ToString("#.##") + " " + 
+                       robot.FeedBack.Cartesian.Pos.Y.ToString("#.##") + " " + 
+                       robot.FeedBack.Cartesian.Pos.Z.ToString("#.##"));
                 }
             }
         }
@@ -213,8 +219,8 @@ namespace ExternalGuidedMotion
             }
 
 
-            pc.SetX(this.Y)
-              .SetY(-this.X)
+            pc.SetX(100)
+              .SetY(-20)
               .SetZ(0);
 
             pq.SetU0(0.0)
