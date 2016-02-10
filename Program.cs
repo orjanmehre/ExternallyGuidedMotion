@@ -68,10 +68,18 @@ namespace ExternalGuidedMotion
     {
         // listen on this port for inbound messages
         public static int _ipPortNumber = 6510;
+        public static int _cameraIpPortNumber = 3000;
         private static bool _exit = false;
 
         static void Main(string[] args)
         {
+
+          
+
+            Camera c = new Camera();
+            c.StartCamera();
+
+            /*
             Sensor s = new Sensor();
             s.Start();
 
@@ -79,7 +87,7 @@ namespace ExternalGuidedMotion
             {
                 s.Stop();
             };
-
+            */
             Console.ReadLine();
         }
     }

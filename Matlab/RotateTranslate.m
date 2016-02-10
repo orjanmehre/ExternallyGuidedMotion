@@ -91,6 +91,7 @@ xlim([0 1.5])
 xlabel('Time [s]')
 ylabel('Position [mm]')
 grid on; 
+
  
 % Finding the biggest differense between rob.pos and disc.pos
 [maxDiffX,cellNumX] = max(abs(newXYZcord(1:size(newXYZcord,1),cx))- abs(robotXYZ(1:size(robotXYZ,1),cx)));
@@ -106,7 +107,7 @@ Z = ' Z:';
 
 fprintf('%s %#.4g %s %#.4g %s %#.4g %s %#.4g %s %#.4g %s %#.4g ', X, maxDiffX,T, time(1,cellNumX),Y,maxDiffY, T, time(1,cellNumY), Z,maxDiffZ,T ,time(1,cellNumZ));
 
-% Writing the processed data to txt file.
+%% Writing the processed data to txt file.
 % fileIDW = fopen('Test\16.02.03 60deg Test5(P).txt','wt');
 % fprintf(fileIDW, 'Time \t\t RobotX \t RobotY \t RobotZ \t DiscX \t\t DiscY \t\t DiscZ \n')
 % for i = 1 :1 : size(robotXYZ,1)
