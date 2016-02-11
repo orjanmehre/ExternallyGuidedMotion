@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.IO;
 
 /// <summary>
-/// This program is acting as a server and gets position data from the In-Sight Explorer.
+/// This program is acting as a server and gets position data from a Cognex smart camera.
 /// X and Y are the position of the disc in relation to the calibration done in In-Sight Explorer.
-/// It is impotant that the port is the same port as stated in In-Sight Explorer.
+/// It is impotant that the port is the same port as in In-Sight Explorer.
 /// </summary>
 
 namespace ExternalGuidedMotion
@@ -22,6 +20,12 @@ namespace ExternalGuidedMotion
         private UdpClient _cameraUdpServer = null;
         public bool exitThread = false;
 
+        Stopwatch stopwatch = new Stopwatch();
+
+        /*
+        public TextWriter executionTime = new StreamWriter
+            (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\executionTime.txt", true);
+        */
         public double X { get; set; }
         public double Y { get; set; }
 
@@ -32,6 +36,9 @@ namespace ExternalGuidedMotion
 
             while (exitThread == false)
             {
+                //Measure the time it takes to get new position data from the camera. 
+                stopwatch.Start(); 
+
                 var cameraData = _cameraUdpServer.Receive(ref cameraRemoteEP);
 
                 if(cameraData != null)
@@ -51,7 +58,14 @@ namespace ExternalGuidedMotion
                     X = Convert.ToDouble(tempX);
                     Y = Convert.ToDouble(tempY);
 
-                    Console.WriteLine(X + " " + Y);
+                    /*
+                    executionTime.WriteLine(stopwatch.ElapsedMilliseconds);
+                    */
+
+                    stopwatch.Stop();
+                    stopwatch.Reset();
+
+                    Console.WriteLine(X + " " + Y);   
 
                 }
                 else

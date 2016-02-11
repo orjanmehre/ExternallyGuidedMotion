@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Windows.Forms;
-using System.Diagnostics;
-using System.Threading.Tasks;
 
 
-
-/// This class generate simulated position data for a object sliding down a ramp.
+/// <summary>
+/// This class generate simulated position data for a object friction less sliding down a ramp.
 /// The data that is generated is in one dimmension.
 /// This data is used in simulation and testing. 
+/// </summary>
+
+
 
 namespace ExternalGuidedMotion
 {

@@ -5,14 +5,6 @@ using System.Net.Sockets;
 using abb.egm;
 using System.Diagnostics;
 using System.Threading;
-using System.Windows.Media.Media3D;
-
-
-
-
-
-
-
 
 
 
@@ -73,13 +65,6 @@ namespace ExternalGuidedMotion
 
         static void Main(string[] args)
         {
-
-          
-
-            Camera c = new Camera();
-            c.StartCamera();
-
-            /*
             Sensor s = new Sensor();
             s.Start();
 
@@ -87,7 +72,7 @@ namespace ExternalGuidedMotion
             {
                 s.Stop();
             };
-            */
+            
             Console.ReadLine();
         }
     }
@@ -98,46 +83,62 @@ namespace ExternalGuidedMotion
         private UdpClient _udpServer = null;
         public bool exitThread = false;
         private uint _seqNumber = 0;
-        Path path = new Path();
+
+        Camera camera = new Camera();
 
         // Write poisition data to txt file for plotting
+        /*
         TextWriter positionfile = new StreamWriter
             (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", false);
+            */
+
+        public TextWriter executionTime = new StreamWriter
+        (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\executionTime.txt", true);
 
         public DateTime startTime = DateTime.Now;
+
+        /* For simulation
+        Path path = new Path();
         int Y = new Random().Next(0, 301);
         int Z = 0; 
         public double X { get; set; }
-
-        
+        */
 
         public double xRobot { get; set; }
         public double yRobot { get; set; }
         public double zRobot { get; set; }
 
-
+     
         public void SensorThread()
         {
             // create an udp client and listen on any address and the port _ipPortNumber
+
+            //TimerCallback tcb = path.Time; // For simulation
             _udpServer = new UdpClient(Program._ipPortNumber);
             var remoteEP = new IPEndPoint(IPAddress.Any, Program._ipPortNumber);
-            TimerCallback tcb = path.Time;
+            camera.StartCamera();
+            
+
+
+            // For simulation
             bool isFirstLoop = true;
             
             while (exitThread == false)
             {
-                
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 // get the message from robot
                 var data = _udpServer.Receive(ref remoteEP);
 
                 if (data != null)
                 {
+                    /*
                     if (isFirstLoop == true)
                     {
                         Timer timer = new Timer(tcb, exitThread, 60, 33);
                         startTime = DateTime.Now;
                         isFirstLoop = false; 
                     }
+                    */
 
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
@@ -171,8 +172,8 @@ namespace ExternalGuidedMotion
                         }
                     }
 
-                    
 
+                    /*
                     //Write position data to txt file
                     positionfile.WriteLine( path.time.ToString("#.##") + " " +
                        sensor.Planned.Cartesian.Pos.X.ToString("#.##") + " " + 
@@ -181,8 +182,15 @@ namespace ExternalGuidedMotion
                        robot.FeedBack.Cartesian.Pos.X.ToString("#.##") + " " + 
                        robot.FeedBack.Cartesian.Pos.Y.ToString("#.##") + " " + 
                        robot.FeedBack.Cartesian.Pos.Z.ToString("#.##"));
+                  */
+
+                    executionTime.WriteLine(stopwatch.ElapsedMilliseconds);
+                    stopwatch.Stop();
                 }
+
+                
             }
+            
         }
 
         // Display message from robot
@@ -210,6 +218,7 @@ namespace ExternalGuidedMotion
                .SetMtype(EgmHeader.Types.MessageType.MSGTYPE_CORRECTION); // Sent by sensor, MSGTYPE_DATA if sent from robot controller
 
             sensor.SetHeader(hdr);
+            //Debug.WriteLine(hdr);
             
             // create some sensor data
             EgmPlanned.Builder planned = new EgmPlanned.Builder();
@@ -217,19 +226,25 @@ namespace ExternalGuidedMotion
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
 
+            /*
             // To get the pos in mm
-            this.X = path.position * 1000;
+            CameraX = path.position * 1000;
 
             // Set a limit for the robot down the ramp, to avoid "Mechanical unit close to joint bound"
             if (X > 4000)
             {
                 X = 4000; 
             }
+            */
 
+
+            double X = camera.X;
+            double Y = camera.Y;
+            
 
             pc.SetX(X)
-              .SetY(-Y)
-              .SetZ(Z);
+              .SetY(Y)
+              .SetZ(0);
 
             pq.SetU0(0.0)
               .SetU1(0.0)
@@ -250,13 +265,15 @@ namespace ExternalGuidedMotion
         public void Start()
         {
             _sensorThread = new Thread(new ThreadStart(SensorThread));
-            _sensorThread.Start(); 
+            _sensorThread.Start();
         }
 
         // Stop and exit thread
         public void Stop()
         {
-            positionfile.Close();
+            //camera.executionTime.Close();
+            executionTime.Close();
+            //positionfile.Close();
             exitThread = true;
             _sensorThread.Abort();        
         }

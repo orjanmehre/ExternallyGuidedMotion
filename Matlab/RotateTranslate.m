@@ -1,6 +1,9 @@
 %% 
-% This script is used to transform the position data of the disk from the 
-% workobjects coordinate system to the robot base cord.system. 
+%{ 
+This script is used to transform the position data of the disk from the 
+workobjects coordinate system to the robot base cord.system. 
+%}
+
 %%
 clc;
 clear all; 
