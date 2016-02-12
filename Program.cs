@@ -56,41 +56,92 @@ using System.Threading;
 
 namespace ExternalGuidedMotion
 {
-    class Program
+    public static class Settings
+    {
+        public enum Mode
+        {
+            Default,
+            CameraWithPlot,
+            CameraWithoutPlot,
+            SimulatedDiscWithPlot,
+            SimulatedDiscWithoutPlot
+        };
+    }
+
+    public class Program
     {
         // listen on this port for inbound messages
         public static int _ipPortNumber = 6510;
         public static int _cameraIpPortNumber = 3000;
-        private static bool _exit = false;
 
         static void Main(string[] args)
         {
-            Sensor s = new Sensor();
-            s.Start();
+            var mode = Settings.Mode.Default;
 
-            Console.CancelKeyPress += delegate
+            if (args == null)
             {
-                s.Stop();
-            };
-            
-            Console.ReadLine();
+                Console.WriteLine("args is null"); //Check for null array
+            }
+
+            else if (args[0] == "camerap")
+            {
+                mode = Settings.Mode.CameraWithPlot;
+            }
+            else if (args[0] == "camera")
+            {
+                CAMERAWITHOUTPLOT = true;
+            }
+            else if (args[0] == "simulatep")
+            {
+                SIMULATEDISCWITHPLOT = true;
+            }
+            else if (args[0] == "simulate")
+            {
+                SIMULATEDISCWITHOUTPLOT = true;
+            }
+
+            else
+            {
+                Console.WriteLine("Legal options: camerap, camera, simulatep, simulate");
+            }
+
+            Sensor s = new Sensor(mode);
+                s.Start();
+
+                Console.CancelKeyPress += delegate
+                {
+                    s.Stop();
+                };
+
+                Console.ReadLine();
         }
     }
 
     public class Sensor
     {
+        
         private Thread _sensorThread = null;
         private UdpClient _udpServer = null;
         public bool exitThread = false;
         private uint _seqNumber = 0;
+        private Settings.Mode mode;
+        public Stopwatch stopwatch = new Stopwatch();
+        private Camera camera;
 
-        Camera camera = new Camera();
+        public Sensor(Settings.Mode mode)
+        {
+            this.mode = mode;
 
-        // Write poisition data to txt file for plotting
-        /*
+            if (mode == Settings.Mode.CameraWithPlot || mode == Settings.Mode.CameraWithoutPlot)
+            {
+                camera.StartCamera();
+            }
+                
+        }
+        
         TextWriter positionfile = new StreamWriter
-            (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", false);
-            */
+        (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", false);
+
 
         public TextWriter executionTime = new StreamWriter
         (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\executionTime.txt", true);
@@ -108,6 +159,22 @@ namespace ExternalGuidedMotion
         public double yRobot { get; set; }
         public double zRobot { get; set; }
 
+        public double x { get; set; }
+        public double y { get; set; }
+
+
+        public void CameraXY()
+        {
+            x = camera.X;
+            y = camera.Y; 
+        }
+
+
+        public void CameraWithPlot()
+        {
+            executionTime.WriteLine(stopwatch.ElapsedMilliseconds);
+        }
+
      
         public void SensorThread()
         {
@@ -116,16 +183,27 @@ namespace ExternalGuidedMotion
             //TimerCallback tcb = path.Time; // For simulation
             _udpServer = new UdpClient(Program._ipPortNumber);
             var remoteEP = new IPEndPoint(IPAddress.Any, Program._ipPortNumber);
-            camera.StartCamera();
             
-
+            
 
             // For simulation
             bool isFirstLoop = true;
             
             while (exitThread == false)
             {
-                Stopwatch stopwatch = Stopwatch.StartNew();
+                stopwatch.Start();
+
+                if (mode == Settings.Mode.CameraWithPlot)
+                {
+                    CameraXY();
+                    CameraWithPlot();
+                }
+
+                else if(mode == Settings.Mode.CameraWithoutPlot)
+                {
+                    CameraXY();
+                }
+                
                 // get the message from robot
                 var data = _udpServer.Receive(ref remoteEP);
 
@@ -237,13 +315,8 @@ namespace ExternalGuidedMotion
             }
             */
 
-
-            double X = camera.X;
-            double Y = camera.Y;
-            
-
-            pc.SetX(X)
-              .SetY(Y)
+            pc.SetX(x)
+              .SetY(y)
               .SetZ(0);
 
             pq.SetU0(0.0)
