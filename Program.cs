@@ -119,17 +119,32 @@ namespace ExternalGuidedMotion
 
     public class Sensor
     {
-        
         private Thread _sensorThread = null;
         private UdpClient _udpServer = null;
         public bool exitThread = false;
         private uint _seqNumber = 0;
         private Settings.Mode mode;
         public Stopwatch stopwatch = new Stopwatch();
-        private Camera camera;
-        private Path path;
+        private Camera camera = new Camera();
+        private Path path = new Path();
+        public TextWriter positionfile = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", true);
+        public TextWriter executionTime = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\executionTime.txt", true);
+        public DateTime startTime = DateTime.Now;
 
+        public double xRobot { get; set; }
+        public double yRobot { get; set; }
+        public double zRobot { get; set; }
+
+        public double x { get; set; }
+        public double y { get; set; }
         public int z;
+
+        public bool isFirstLoop = true;
+        public TimerCallback tcb;
+        public EgmSensor.Builder sensor;
+        public EgmRobot robot;
+
+        
 
         public Sensor(Settings.Mode mode)
         {
@@ -146,28 +161,8 @@ namespace ExternalGuidedMotion
             }
         }
         
-        TextWriter positionfile = new StreamWriter
-        ("position.txt", false);
-
-        public TextWriter executionTime = new StreamWriter
-        ("executionTime.txt", true);
-
-        public DateTime startTime = DateTime.Now;
-
-        public double xRobot { get; set; }
-        public double yRobot { get; set; }
-        public double zRobot { get; set; }
-
-        public double x { get; set; }
-        public double y { get; set; }
-
-        public bool isFirstLoop;
-        public TimerCallback tcb;
-
-        public EgmSensor.Builder sensor;
-        public EgmRobot robot;
-
-
+        
+        // Get x and y position from the camera.
         public void CameraXY()
         {
             x = camera.X;
@@ -175,40 +170,43 @@ namespace ExternalGuidedMotion
             z = 0;
         }
 
-
+        // Write the time which the camera use to take and process a new image. 
         public void CameraWithPlot()
         {
-            executionTime.WriteLine(stopwatch.ElapsedMilliseconds);
+            executionTime.WriteLine(camera.timeElapsed);
         }
 
+        // Get x and y position from the simulated disc
         public void PathXY()
         {
             tcb = path.Time;
             // Convert the postition data from m to mm
             x = path.position * 1000;
 
-            // Set a limit for the robot down the ramp, to avoid "Mechanical unit close to joint bound"
+            // Set a limit for the robot down the ramp, to avoid "Mechanical unit close to joint bound" 
             if (x > 1000)
             {
                 x = 1000;
             }
-           
-            y = new Random().Next(0, 301);
-            z = 0;
+
+            if (isFirstLoop == true)
+            {
+                y = - new Random().Next(0, 301);
+            }
             
-            isFirstLoop = true;
+            z = 0;  
         }
 
-
+        // Plot the position data of the disc and the robot. 
         public void PathWithPlot()
         {
             positionfile.WriteLine(path.time.ToString("#.##") + " " +
-                      sensor.Planned.Cartesian.Pos.X.ToString("#.##") + " " +
-                      sensor.Planned.Cartesian.Pos.Y.ToString("#.##") + " " +
-                      sensor.Planned.Cartesian.Pos.Z.ToString() + " " +
-                      robot.FeedBack.Cartesian.Pos.X.ToString("#.##") + " " +
-                      robot.FeedBack.Cartesian.Pos.Y.ToString("#.##") + " " +
-                      robot.FeedBack.Cartesian.Pos.Z.ToString("#.##"));
+                      x.ToString("#.##") + " " +
+                      y.ToString("#.##") + " " +
+                      z.ToString() + " " +
+                      xRobot.ToString("#.##") + " " +
+                      yRobot.ToString("#.##") + " " +
+                      zRobot.ToString("#.##"));
         }
 
 
@@ -223,11 +221,13 @@ namespace ExternalGuidedMotion
             {
                 stopwatch.Start();
 
+                // Get the position data form the camera
                 if(mode == Settings.Mode.CameraWithoutPlot || mode == Settings.Mode.CameraWithPlot)
                 {
                     CameraXY();
+                    isFirstLoop = false;
                 }
-
+                // Get the position data from the simulated disc
                 else if(mode == Settings.Mode.SimulatedDiscWithPlot || mode == Settings.Mode.SimulatedDiscWithoutPlot)
                 {
                     PathXY(); 
@@ -238,8 +238,7 @@ namespace ExternalGuidedMotion
                     Console.WriteLine("No legal options");
                 }
 
-
-                // get the message from robot
+                // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEP);
 
                 if (data != null)
@@ -285,12 +284,14 @@ namespace ExternalGuidedMotion
                     {
                         CameraWithPlot();
                     }
+                    // Write the position data of the disc and robot to file
                     else if (mode == Settings.Mode.SimulatedDiscWithPlot)
                     {
                         PathWithPlot();
                     }
 
                     stopwatch.Stop();
+                    stopwatch.Reset();
                 }
             } 
         }
@@ -328,7 +329,7 @@ namespace ExternalGuidedMotion
 
             pc.SetX(x)
               .SetY(y)
-              .SetZ(0);
+              .SetZ(z);
 
             pq.SetU0(0.0)
               .SetU1(0.0)

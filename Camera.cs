@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
-using System.IO;
+
 
 /// <summary>
 /// This program is acting as a server and gets position data from a Cognex smart camera.
@@ -19,15 +19,12 @@ namespace ExternalGuidedMotion
         private Thread _cameraThread = null;
         private UdpClient _cameraUdpServer = null;
         public bool exitThread = false;
-
         Stopwatch stopwatch = new Stopwatch();
 
-        /*
-        public TextWriter executionTime = new StreamWriter
-            (@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\executionTime.txt", true);
-        */
         public double X { get; set; }
         public double Y { get; set; }
+
+        public double timeElapsed { get; set; }
 
         public void CameraThread()
         {
@@ -58,14 +55,9 @@ namespace ExternalGuidedMotion
                     X = Convert.ToDouble(tempX);
                     Y = Convert.ToDouble(tempY);
 
-                    /*
-                    executionTime.WriteLine(stopwatch.ElapsedMilliseconds);
-                    */
-
+                    timeElapsed = stopwatch.ElapsedMilliseconds;
                     stopwatch.Stop();
                     stopwatch.Reset();
-
-                    Console.WriteLine(X + " " + Y);   
 
                 }
                 else
