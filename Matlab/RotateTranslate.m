@@ -7,15 +7,16 @@ workobjects coordinate system to the robot base cord.system.
 %%
 clc;
 clear all; 
+name = 'v500';
 
 %% Choose plot
-plotPosition = 0; 
-plotVelocity = 0; 
-plotAcceleration = 0; 
-writeProcessedDataToFile = 0;
-plotMeanPos = 0;
-plotMeanVelocity = 0;
-plotMeanAcceleration = 0;
+plotPosition = 1; 
+plotVelocity = 1; 
+plotAcceleration = 1; 
+plotMeanPos = 1;
+plotMeanVelocity = 1;
+plotMeanAcceleration = 1;
+writeProcessedDataToFile = 1;
 
 %%
 cx = 1;
@@ -48,8 +49,8 @@ end
 for j = 2: 1: 4
     for i = 1: 1: size(C{1,7},1)
             tempSentSensorXYZ = C{1,j}{i,1};
-            sentSensorXYZ(i,j-1) = str2double(strrep(tempSentSensorXYZ, ',' , '.')); 
-    
+            sentSensorXYZ(i,j-1) = str2double(strrep(tempSentSensorXYZ,...
+                ',' , '.')); 
     end
 end
 
@@ -65,12 +66,16 @@ for i = 1 : 1 : size(C{1,7},1)
 end
 
 %Rotation matrices
-rotZ = [cosd(theta), -sind(theta), 0, 0 ; sind(theta), cosd(theta), 0, 0 ; 0, 0, 1, 0 ; 0, 0, 0, 1];
-rotY = [cosd(gamma), 0, sind(gamma), 0 ; 0, 1, 0, 0 ; -sind(gamma), 0, cosd(gamma), 0 ; 0, 0, 0, 1];
-rotX = [1, 0, 0, 0 ; 0, cosd(tau), -sind(tau), 0 ; 0, sind(tau), cosd(tau), 0 ; 0, 0, 0, 1];
+rotZ = [cosd(theta), -sind(theta), 0, 0 ; sind(theta), cosd(theta), 0,0;...
+    0, 0, 1, 0 ; 0, 0, 0, 1];
+rotY = [cosd(gamma), 0, sind(gamma), 0 ; 0, 1, 0, 0 ;...
+    -sind(gamma), 0, cosd(gamma), 0 ; 0, 0, 0, 1];
+rotX = [1, 0, 0, 0 ; 0, cosd(tau), -sind(tau), 0 ;...
+    0, sind(tau), cosd(tau), 0 ; 0, 0, 0, 1];
 
 % Translation matrix
-translation = [1, 0, 0, TransX ; 0, 1, 0, TransY ; 0, 0, 1, TransZ ; 0,0,0,1];
+translation = [1, 0, 0, TransX ; 0, 1, 0, TransY ; 0, 0, 1, TransZ...
+    ; 0,0,0,1];
 
 % Calculate the rotation matrix of the system
 rotZYX = (-rotZ)*(-rotY)*(rotX);
@@ -84,19 +89,16 @@ for i = 1: 1 : size(sentSensorXYZ,1)
         newXYZcord(i, 1:4) = tempNewXYZCord';
 end
 
+% Remove the once from column 4
 newXYZcord = newXYZcord(1:end, 1:3);
 
+% Find the mean between the position in XYZ -direction
 meanPosDisc = mean(newXYZcord,2);
 meanPosRob = mean(robotXYZ,2);
 
-if plotMeanPos == 1
-    figure;
-    plot(time,meanPosDisc,time,meanPosRob);
-end
-
-%% Plot position
+%% Plot position in XYZ
 if plotPosition == 1
-    figure;
+    figure1 = figure;
     plot(time, newXYZcord(1:size(newXYZcord,1),cx),'-r');hold on; 
     plot(time, robotXYZ(1:size(robotXYZ,1),cx),'-b'); hold on; 
 
@@ -106,13 +108,26 @@ if plotPosition == 1
     plot(time, newXYZcord(1:size(newXYZcord,1),cz),'-m'); hold on; 
     plot(time, robotXYZ(1:size(robotXYZ,1),cz),'-c');
 
-    legend('Disc X position','Robot X position','Disc Y position','Robot Y position','Disc Z position','Robot Z position' )
+    legend('Disc X position','Robot X position','Disc Y position',...
+        'Robot Y position','Disc Z position','Robot Z position' )
     xlabel('Time [s]')
     ylabel('Position [mm]')
-    grid on; 
+    grid on;
+    filename = ['Plot/positionXYZ',name,'.eps'];
+    saveas(figure1, filename);
 end
 
-%% Plot velocity
+%% Plot mean position
+if plotMeanPos == 1
+    figure2 = figure;
+    plot(time,meanPosDisc,'r',time,meanPosRob,'b');
+    grid on;
+    legend('Mean position disc', 'Mean position robot');
+    filename = ['Plot/meanPosition',name,'.eps'];
+    saveas(figure2, filename);
+end
+
+%% Plot velocity in XYZ
 if plotVelocity == 1
     N = 6;
     windowSize = 8;
@@ -124,6 +139,16 @@ if plotVelocity == 1
     posRX = translatedRobotXYZ(1,:);
     posRX = posRX(1: N: length(posRX));
     
+    posY = translatedNewXYZCord(2,:);
+    posY = posY(1: N: length(posY));
+    posRY = translatedRobotXYZ(2,:);
+    posRY = posRY(1: N: length(posRY));
+    
+    posZ = translatedNewXYZCord(3,:);
+    posZ = posZ(1: N: length(posZ));
+    posRZ = translatedRobotXYZ(3,:);
+    posRZ = posRZ(1: N: length(posRZ));
+    
     timeNth = time(1: N: length(time)-1);
     
     b = (1/windowSize)*ones(1,windowSize);
@@ -132,15 +157,33 @@ if plotVelocity == 1
     velX = diff(posX);
     velRX = diff(posRX);
     
-    velX = filter(b,a,velX);
+    velY = diff(posY);
+    velRY = diff(posRY);
     
-    figure;
-    plot(timeNth(10:end), velX(10:end),timeNth(10:end),velRX(10:end))
+    velZ = diff(posZ);
+    velRZ = diff(posRZ);
+    
+    velX = filter(b,a,velX);
+    velY = filter(b,a,velY);
+    velZ = filter(b,a,velZ);
+    
+    figure3 = figure;
+    plot(timeNth(10:end), velX(10:end),'r', timeNth(10:end),...
+        velRX(10:end), 'b'); hold on;
+    plot(timeNth(10:end), velY(10:end),'k', timeNth(10:end),...
+        velRY(10:end), 'g'); hold on;
+    plot(timeNth(10:end), velZ(10:end),'m', timeNth(10:end),...
+        velRZ(10:end), 'c'); 
+    legend('Disc X velocity','Robot X velocity','Disc Y velocity',...
+        'Robot Y velocity','Disc Z velocity','Robot Z velocity' )
+    grid on;
+    filename = ['Plot/velocityXYZ',name,'.eps'];
+    saveas(figure3, filename);
 end
 
 
     %% Plot mean velocity
-    if plotMeanVelocity == 0
+    if plotMeanVelocity == 1
         N = 6;
         windowSize = 8;
         transMeanPos = meanPosDisc';
@@ -160,49 +203,73 @@ end
         meanVelDisc = filter(b,a,meanVelDisc);
         %meanVelRob = filter(b,a,meanVelRob);
         
-        figure;
-        plot(timeNth(10:end), meanVelDisc(10:end), timeNth(10:end), meanVelRob(10:end));
-        
+        figure4 = figure;
+        plot(timeNth(10:end), meanVelDisc(10:end), timeNth(10:end),...
+            meanVelRob(10:end)); 
+        grid on; 
+        legend('Mean speed disc', 'Mean speed robot');
+        filename = ['Plot/meanVelocity',name,'.eps'];
+        saveas(figure4, filename);
     end
     
     
-    %% Plot acceleration
+    %% Plot acceleration in XYZ
     if plotAcceleration == 1
         acelX = diff(velX);
         acelRX = diff(velRX);
+        acelY = diff(velY);
+        acelRY = diff(velRY);
+        acelZ = diff(velY);
+        acelRZ = diff(velZ);
 
         acelX = filter(b,a,acelX);
         acelRX = filter(b,a,acelRX);
-
-        figure;
-        plot(timeNth(20:end-1), acelX(20:end),timeNth(20:end-1),acelRX(20:end))
-        legend('Disc acceleration', 'Robot acceleration');
+        acelY = filter(b,a,acelY);
+        acelRY = filter(b,a,acelRY);
+        acelZ = filter(b,a,acelZ);
+        acelRZ = filter(b,a,acelRZ);
+        
+        figure5 = figure;
+        plot(timeNth(20:end-1), acelX(20:end),'r', timeNth(20:end-1),...
+            acelRX(20:end),'b'); hold on;
+        plot(timeNth(20:end-1), acelY(20:end),'k', timeNth(20:end-1),...
+            acelRY(20:end),'g'); hold on;
+        plot(timeNth(20:end-1), acelZ(20:end),'m' ,timeNth(20:end-1),...
+            acelRZ(20:end),'c'); 
+        legend('Disc X acceleration','Robot X acceleration',...
+            'Disc Y acceleration', 'Robot Y acceleration',...
+            'Disc Z acceleration','Robot Z acceleration' );
+        grid on; 
+        filename = ['Plot/accelerationXYZ',name,'.eps'];
+        saveas(figure5, filename);
     end
     
     %% Plot mean acceleration
-    if plotMeanAcceleration == 0
+    if plotMeanAcceleration == 1
         meanAccelDisc = diff(meanVelDisc);
         meanAccelRob = diff(meanVelRob);
         
         meanAccelDisc = filter(b,a,meanAccelDisc);
         meanAccelRob = filter(b,a,meanAccelRob);
         
-        figure;
-        plot(timeNth(10:end-1), meanAccelDisc(10:end), timeNth(10:end-1), meanAccelRob(10:end));
-        
+        figure6 = figure;
+        plot(timeNth(10:end-1), meanAccelDisc(10:end),timeNth(10:end-1),...
+            meanAccelRob(10:end));
+        grid on; 
+        legend('Mean acceleration disc', 'Mean acceleration robot');
+        filename = ['Plot/meanAcceleration',name,'.eps'];
+        saveas(figure6, filename);
     end
     
 
-
-
- 
-
 %% Writing the processed data to txt file.
 if writeProcessedDataToFile == 1
-    fileIDW = fopen('Test\16.02.03 60deg Test5(P).txt','wt');
-    fprintf(fileIDW, 'Time \t\t RobotX \t RobotY \t RobotZ \t DiscX \t\t DiscY \t\t DiscZ \n')
+    filename = ['Plot/processedData',name,'.txt'];
+    fileIDW = fopen(filename,'wt');
+    fprintf(fileIDW, 'Time\tRobotX\tRobotY\tRobotZ\tDiscX\tDiscY\tDiscZ\n')
     for i = 1 :1 : size(robotXYZ,1)
-            fprintf(fileIDW,'%#.6g \t',(time(:,i)),robotXYZ(i,:), newXYZcord(i,:));
+            fprintf(fileIDW,'%#.6g \t',(time(:,i)),robotXYZ(i,:),...
+                newXYZcord(i,:));
             fprintf(fileIDW, '\n');
     end
 end
