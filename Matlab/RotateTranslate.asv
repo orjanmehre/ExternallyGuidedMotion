@@ -146,22 +146,11 @@ end
         transMeanPos = meanPosDisc';
         transMeanRob = meanPosRob';
         
-        meanPosDisc = transMeanPos(1: N: length(transMeanPos));
-        meanPosRob = transMeanRob(1: N: length(transMeanRob));
+        meanPO = (1: N: length(transMeanPos));
+        meanRVel =(1: N: length(transMeanRob));
         
         timeNth = time(1: N: length(time)-1);
         
-        meanVelDisc = diff(meanPosDisc);
-        meanVelRob = diff(meanPosRob);
-        
-        b = (1/windowSize)*ones(1,windowSize);
-        a = 1;
-
-        meanVelDisc = filter(b,a,meanVelDisc);
-        %meanVelRob = filter(b,a,meanVelRob);
-        
-        figure;
-        plot(timeNth(10:end), meanVelDisc(10:end), timeNth(10:end), meanVelRob(10:end));
         
     end
     
@@ -177,19 +166,6 @@ end
         figure;
         plot(timeNth(20:end-1), acelX(20:end),timeNth(20:end-1),acelRX(20:end))
         legend('Disc acceleration', 'Robot acceleration');
-    end
-    
-    %% Plot mean acceleration
-    if plotMeanAcceleration == 0
-        meanAccelDisc = diff(meanVelDisc);
-        meanAccelRob = diff(meanVelRob);
-        
-        meanAccelDisc = filter(b,a,meanAccelDisc);
-        meanAccelRob = filter(b,a,meanAccelRob);
-        
-        figure;
-        plot(timeNth(10:end-1), meanAccelDisc(10:end), timeNth(10:end-1), meanAccelRob(10:end));
-        
     end
     
 
