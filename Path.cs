@@ -13,7 +13,7 @@ namespace ExternalGuidedMotion
 {
     public class Path
     {
-        public const double ANGLE = 30;
+        public const double ANGLE = 45;
         public int i = 1;
         public double position { get; set; }
         public double time { get; set; }

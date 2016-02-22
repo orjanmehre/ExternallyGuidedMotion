@@ -78,9 +78,10 @@ namespace ExternalGuidedMotion
         {
             var mode = Settings.Mode.Default;
 
+            //Check for null array
             if (args == null)
             {
-                Console.WriteLine("args is null"); //Check for null array
+                Console.WriteLine("args is null"); 
             }
 
             else if (args[0] == "camerap")
@@ -127,8 +128,8 @@ namespace ExternalGuidedMotion
         public Stopwatch stopwatch = new Stopwatch();
         private Camera camera = new Camera();
         private Path path = new Path();
-        public TextWriter positionfile = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", true);
-        public TextWriter executionTime = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\executionTime.txt", true);
+        public TextWriter positionfile = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\position.txt", true);
+        public TextWriter executionTime = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\executionTime.txt", true);
         public DateTime startTime = DateTime.Now;
 
         public double xRobot { get; set; }
@@ -191,7 +192,7 @@ namespace ExternalGuidedMotion
 
             if (isFirstLoop == true)
             {
-                y = - new Random().Next(0, 301);
+                y = - new Random().Next(0, 101);
             }
             
             z = 0;  
@@ -200,7 +201,7 @@ namespace ExternalGuidedMotion
         // Plot the position data of the disc and the robot. 
         public void PathWithPlot()
         {
-            positionfile.WriteLine(path.time.ToString("#.##") + " " +
+            positionfile.WriteLine(stopwatch.ElapsedMilliseconds.ToString("#.##") + " " +
                       x.ToString("#.##") + " " +
                       y.ToString("#.##") + " " +
                       z.ToString() + " " +
@@ -283,15 +284,13 @@ namespace ExternalGuidedMotion
                     if (mode == Settings.Mode.CameraWithPlot)
                     {
                         CameraWithPlot();
+                        PathWithPlot();
                     }
                     // Write the position data of the disc and robot to file
                     else if (mode == Settings.Mode.SimulatedDiscWithPlot)
                     {
                         PathWithPlot();
                     }
-
-                    stopwatch.Stop();
-                    stopwatch.Reset();
                 }
             } 
         }
@@ -358,7 +357,9 @@ namespace ExternalGuidedMotion
             executionTime.Close();
             positionfile.Close();
             exitThread = true;
-            _sensorThread.Abort();        
+            _sensorThread.Abort();
+            stopwatch.Stop();
+            stopwatch.Reset();
         }
     }  
 }
