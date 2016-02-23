@@ -16,7 +16,7 @@ plotAcceleration = 1;
 plotMeanPos = 1;
 plotMeanVelocity = 1;
 plotMeanAcceleration = 1;
-writeProcessedDataToFile = 1;
+writeProcessedDataToFile = 0;
 
 %%
 cx = 1;
@@ -92,6 +92,11 @@ end
 % Remove the once from column 4
 newXYZcord = newXYZcord(1:end, 1:3);
 
+% Smooth data
+filt = fir1(30, 0.01);
+newXYZcord = filter(filt,1,newXYZcord);
+robotXYZ = filter(filt,1,robotXYZ);
+
 % Find the mean between the position in XYZ -direction
 meanPosDisc = mean(newXYZcord,2);
 meanPosRob = mean(robotXYZ,2);
@@ -99,14 +104,14 @@ meanPosRob = mean(robotXYZ,2);
 %% Plot position in XYZ
 if plotPosition == 1
     figure1 = figure;
-    plot(time, newXYZcord(1:size(newXYZcord,1),cx),'-r');hold on; 
-    plot(time, robotXYZ(1:size(robotXYZ,1),cx),'-b'); hold on; 
+    plot(time(50:end), newXYZcord(50:size(newXYZcord,1),cx),'-r');hold on; 
+    plot(time(50:end), robotXYZ(50:size(robotXYZ,1),cx),'-b'); hold on; 
 
-    plot(time, newXYZcord(1:size(newXYZcord,1),cy),'-k'); hold on; 
-    plot(time, robotXYZ(1:size(robotXYZ,1),cy),'-g');hold on;
+    plot(time(50:end), newXYZcord(50:size(newXYZcord,1),cy),'-k'); hold on; 
+    plot(time(50:end), robotXYZ(50:size(robotXYZ,1),cy),'-g');hold on;
 
-    plot(time, newXYZcord(1:size(newXYZcord,1),cz),'-m'); hold on; 
-    plot(time, robotXYZ(1:size(robotXYZ,1),cz),'-c');
+    plot(time(50:end), newXYZcord(50:size(newXYZcord,1),cz),'-m'); hold on; 
+    plot(time(50:end), robotXYZ(50:size(robotXYZ,1),cz),'-c');
 
     legend('Disc X position','Robot X position','Disc Y position',...
         'Robot Y position','Disc Z position','Robot Z position' )
@@ -120,7 +125,8 @@ end
 %% Plot mean position
 if plotMeanPos == 1
     figure2 = figure;
-    plot(time,meanPosDisc,'r',time,meanPosRob,'b');
+    plot(time(50:end),meanPosDisc(50:end),'b',time(50:end),...
+        meanPosRob(50:end),'r');
     grid on;
     legend('Mean position disc', 'Mean position robot');
     filename = ['Plot/meanPosition',name,'.eps'];
@@ -129,51 +135,40 @@ end
 
 %% Plot velocity in XYZ
 if plotVelocity == 1
-    N = 6;
-    windowSize = 8;
     translatedNewXYZCord = newXYZcord';
     translatedRobotXYZ = robotXYZ';
     
     posX = translatedNewXYZCord(1,:);
-    posX = posX(1: N: length(posX));
     posRX = translatedRobotXYZ(1,:);
-    posRX = posRX(1: N: length(posRX));
     
     posY = translatedNewXYZCord(2,:);
-    posY = posY(1: N: length(posY));
     posRY = translatedRobotXYZ(2,:);
-    posRY = posRY(1: N: length(posRY));
     
     posZ = translatedNewXYZCord(3,:);
-    posZ = posZ(1: N: length(posZ));
     posRZ = translatedRobotXYZ(3,:);
-    posRZ = posRZ(1: N: length(posRZ));
     
-    timeNth = time(1: N: length(time)-1);
-    
-    b = (1/windowSize)*ones(1,windowSize);
-    a = 1;
-
+    % Derivate position to get velocity
     velX = diff(posX);
     velRX = diff(posRX);
-    
     velY = diff(posY);
     velRY = diff(posRY);
-    
     velZ = diff(posZ);
     velRZ = diff(posRZ);
     
-    velX = filter(b,a,velX);
-    velY = filter(b,a,velY);
-    velZ = filter(b,a,velZ);
+    velX = filter(filt,1,velX);
+    velY = filter(filt,1,velY);
+    velZ = filter(filt,1,velZ);
+    velRX = filter(filt,1,velRX);
+    velRY = filter(filt,1,velRY);
+    velRZ = filter(filt,1,velRZ);
     
     figure3 = figure;
-    plot(timeNth(10:end), velX(10:end),'r', timeNth(10:end),...
-        velRX(10:end), 'b'); hold on;
-    plot(timeNth(10:end), velY(10:end),'k', timeNth(10:end),...
-        velRY(10:end), 'g'); hold on;
-    plot(timeNth(10:end), velZ(10:end),'m', timeNth(10:end),...
-        velRZ(10:end), 'c'); 
+    plot(time(50:end-1), velX(50:end),'r', time(50:end-1),...
+        velRX(50:end), 'b'); hold on;
+    plot(time(50:end-1), velY(50:end),'k', time(50:end-1),...
+        velRY(50:end), 'g'); hold on;
+    plot(time(50:end-1), velZ(50:end),'m', time(50:end-1),...
+        velRZ(50:end), 'c'); 
     legend('Disc X velocity','Robot X velocity','Disc Y velocity',...
         'Robot Y velocity','Disc Z velocity','Robot Z velocity' )
     grid on;
@@ -184,28 +179,15 @@ end
 
     %% Plot mean velocity
     if plotMeanVelocity == 1
-        N = 6;
-        windowSize = 8;
         transMeanPos = meanPosDisc';
         transMeanRob = meanPosRob';
-        
-        meanPosDisc = transMeanPos(1: N: length(transMeanPos));
-        meanPosRob = transMeanRob(1: N: length(transMeanRob));
-        
-        timeNth = time(1: N: length(time)-1);
-        
+      
         meanVelDisc = diff(meanPosDisc);
         meanVelRob = diff(meanPosRob);
         
-        b = (1/windowSize)*ones(1,windowSize);
-        a = 1;
-
-        meanVelDisc = filter(b,a,meanVelDisc);
-        %meanVelRob = filter(b,a,meanVelRob);
-        
         figure4 = figure;
-        plot(timeNth(10:end), meanVelDisc(10:end), timeNth(10:end),...
-            meanVelRob(10:end)); 
+        plot(time(50:end-1), meanVelDisc(50:end), time(50:end-1),...
+            meanVelRob(50:end)); 
         grid on; 
         legend('Mean speed disc', 'Mean speed robot');
         filename = ['Plot/meanVelocity',name,'.eps'];
@@ -221,21 +203,21 @@ end
         acelRY = diff(velRY);
         acelZ = diff(velY);
         acelRZ = diff(velZ);
-
-        acelX = filter(b,a,acelX);
-        acelRX = filter(b,a,acelRX);
-        acelY = filter(b,a,acelY);
-        acelRY = filter(b,a,acelRY);
-        acelZ = filter(b,a,acelZ);
-        acelRZ = filter(b,a,acelRZ);
+        
+        acelX = filter(filt,1,acelX);
+        acelY = filter(filt,1,acelY);
+        acelZ = filter(filt,1,acelZ);
+        acelRX = filter(filt,1,acelRX);
+        acelRY = filter(filt,1,acelRY);
+        acelRZ = filter(filt,1,acelRZ);
         
         figure5 = figure;
-        plot(timeNth(20:end-1), acelX(20:end),'r', timeNth(20:end-1),...
-            acelRX(20:end),'b'); hold on;
-        plot(timeNth(20:end-1), acelY(20:end),'k', timeNth(20:end-1),...
-            acelRY(20:end),'g'); hold on;
-        plot(timeNth(20:end-1), acelZ(20:end),'m' ,timeNth(20:end-1),...
-            acelRZ(20:end),'c'); 
+        plot(time(100:end-2), acelX(100:end),'r', time(100:end-2),...
+            acelRX(100:end),'b'); hold on;
+        plot(time(100:end-2), acelY(100:end),'k', time(100:end-2),...
+            acelRY(100:end),'g'); hold on;
+        plot(time(100:end-2), acelZ(100:end),'m' ,time(100:end-2),...
+            acelRZ(100:end),'c'); 
         legend('Disc X acceleration','Robot X acceleration',...
             'Disc Y acceleration', 'Robot Y acceleration',...
             'Disc Z acceleration','Robot Z acceleration' );
@@ -249,12 +231,12 @@ end
         meanAccelDisc = diff(meanVelDisc);
         meanAccelRob = diff(meanVelRob);
         
-        meanAccelDisc = filter(b,a,meanAccelDisc);
-        meanAccelRob = filter(b,a,meanAccelRob);
-        
+        meanAccelDisc = filter(filt,1,meanAccelDisc);
+        meanAccelRob = filter(filt,1,meanAccelRob);
+
         figure6 = figure;
-        plot(timeNth(10:end-1), meanAccelDisc(10:end),timeNth(10:end-1),...
-            meanAccelRob(10:end));
+        plot(time(100:end-2), meanAccelDisc(100:end),time(100:end-2),...
+            meanAccelRob(100:end));
         grid on; 
         legend('Mean acceleration disc', 'Mean acceleration robot');
         filename = ['Plot/meanAcceleration',name,'.eps'];
