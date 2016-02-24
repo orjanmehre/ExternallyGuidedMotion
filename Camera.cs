@@ -28,8 +28,8 @@ namespace ExternalGuidedMotion
 
         public void CameraThread()
         {
-            _cameraUdpServer = new UdpClient(Program._cameraIpPortNumber);
-            var cameraRemoteEP = new IPEndPoint(IPAddress.Any, Program._cameraIpPortNumber);
+            _cameraUdpServer = new UdpClient(Program.CameraIpPortNumber);
+            var cameraRemoteEP = new IPEndPoint(IPAddress.Any, Program.CameraIpPortNumber);
 
             while (exitThread == false)
             {

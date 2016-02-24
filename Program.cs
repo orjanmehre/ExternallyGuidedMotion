@@ -71,8 +71,8 @@ namespace ExternalGuidedMotion
     public class Program
     {
         // listen on this port for inbound messages
-        public static int _ipPortNumber = 6510;
-        public static int _cameraIpPortNumber = 3000;
+        public static int IpPortNumber = 6510;
+        public static int CameraIpPortNumber = 3000;
 
         static void Main(string[] args)
         {
@@ -120,113 +120,118 @@ namespace ExternalGuidedMotion
 
     public class Sensor
     {
-        private Thread _sensorThread = null;
-        private UdpClient _udpServer = null;
-        public bool exitThread = false;
+        private Thread _sensorThread;
+        private UdpClient _udpServer;
+        public bool ExitThread = false;
         private uint _seqNumber = 0;
         private Settings.Mode mode;
-        public Stopwatch stopwatch = new Stopwatch();
+        public Stopwatch Stopwatch = new Stopwatch();
         private Camera camera = new Camera();
-        private Path path = new Path();
-        public TextWriter positionfile = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\position.txt", true);
-        public TextWriter executionTime = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\executionTime.txt", true);
-        public DateTime startTime = DateTime.Now;
+        public TextWriter Positionfile = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\position.txt", true);
+        public TextWriter ExecutionTime = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\ExecutionTime.txt", true);
+        public DateTime StartTime = DateTime.Now;
 
-        public double xRobot { get; set; }
-        public double yRobot { get; set; }
-        public double zRobot { get; set; }
+        public double XRobot { get; set; }
+        public double YRobot { get; set; }
+        public double ZRobot { get; set; }
 
-        public double x { get; set; }
-        public double y { get; set; }
-        public int z;
+        public double X { get; set; }
+        public double Y { get; set; }
+        public int Z;
 
-        public bool isFirstLoop = true;
-        public TimerCallback tcb;
-        public EgmSensor.Builder sensor;
-        public EgmRobot robot;
+        public bool IsFirstLoop = true;
+        public TimerCallback Tcb;
 
-        
 
         public Sensor(Settings.Mode mode)
         {
             this.mode = mode;
 
-            if (mode == Settings.Mode.CameraWithPlot || mode == Settings.Mode.CameraWithoutPlot)
+            switch (mode)
             {
-                camera.StartCamera();
-            }
-            else if(mode == Settings.Mode.SimulatedDiscWithPlot || mode == Settings.Mode.SimulatedDiscWithoutPlot)
-            {
+                case Settings.Mode.CameraWithPlot:
+                    camera.StartCamera();
+                    break;
 
-                Path path = new Path(); 
+                case Settings.Mode.CameraWithoutPlot:
+                    camera.StartCamera();
+                    break;
+
+                case Settings.Mode.SimulatedDiscWithPlot:
+                    Path path = new Path();
+                    break;
+
+                case Settings.Mode.SimulatedDiscWithoutPlot:
+                    path = new Path();
+                    break;
             }
         }
-        
-        
+
+
         // Get x and y position from the camera.
         public void CameraXY()
         {
-            x = camera.X;
-            y = camera.Y;
-            z = 0;
+            X = camera.X;
+            Y = camera.Y;
+            Z = 0;
         }
 
         // Write the time which the camera use to take and process a new image. 
         public void CameraWithPlot()
         {
-            executionTime.WriteLine(camera.timeElapsed);
+            ExecutionTime.WriteLine(camera.timeElapsed);
         }
 
         // Get x and y position from the simulated disc
         public void PathXY()
         {
-            tcb = path.Time;
+            Path path = new Path();
             // Convert the postition data from m to mm
-            x = path.position * 1000;
+            X = path.Position * 1000;
 
             // Set a limit for the robot down the ramp, to avoid "Mechanical unit close to joint bound" 
-            if (x > 1000)
+            if (X > 1000)
             {
-                x = 1000;
+                X = 1000;
             }
 
-            if (isFirstLoop == true)
+            if (IsFirstLoop)
             {
-                y = - new Random().Next(0, 101);
+               Y = - new Random().Next(0, 101);
             }
             
-            z = 0;  
+            Z = 0;  
         }
 
         // Plot the position data of the disc and the robot. 
         public void PathWithPlot()
         {
-            positionfile.WriteLine(stopwatch.ElapsedMilliseconds.ToString("#.##") + " " +
-                      x.ToString("#.##") + " " +
-                      y.ToString("#.##") + " " +
-                      z.ToString() + " " +
-                      xRobot.ToString("#.##") + " " +
-                      yRobot.ToString("#.##") + " " +
-                      zRobot.ToString("#.##"));
+            Positionfile.WriteLine(Stopwatch.ElapsedMilliseconds.ToString("#.##") + " " +
+                      X.ToString("#.##") + " " +
+                      Y.ToString("#.##") + " " +
+                      Z.ToString() + " " +
+                      XRobot.ToString("#.##") + " " +
+                      YRobot.ToString("#.##") + " " +
+                      ZRobot.ToString("#.##"));
         }
 
 
 
         public void SensorThread()
         {
-            // create an udp client and listen on any address and the port _ipPortNumber
-            _udpServer = new UdpClient(Program._ipPortNumber);
-            var remoteEP = new IPEndPoint(IPAddress.Any, Program._ipPortNumber);
+            // create an udp client and listen on any address and the port IpPortNumber
+            _udpServer = new UdpClient(Program.IpPortNumber);
+            var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
 
-            while (exitThread == false)
+            while (ExitThread == false)
             {
-                stopwatch.Start();
+                Stopwatch.Start();
 
                 // Get the position data form the camera
                 if(mode == Settings.Mode.CameraWithoutPlot || mode == Settings.Mode.CameraWithPlot)
                 {
                     CameraXY();
-                    isFirstLoop = false;
+                    IsFirstLoop = false;
                 }
                 // Get the position data from the simulated disc
                 else if(mode == Settings.Mode.SimulatedDiscWithPlot || mode == Settings.Mode.SimulatedDiscWithoutPlot)
@@ -240,16 +245,15 @@ namespace ExternalGuidedMotion
                 }
 
                 // Get the message from robot
-                var data = _udpServer.Receive(ref remoteEP);
+                var data = _udpServer.Receive(ref remoteEp);
 
                 if (data != null)
                 {
                     
-                    if (isFirstLoop == true)
+                    if (IsFirstLoop)
                     {
-                        Timer timer = new Timer(tcb, exitThread, 60, 33);
-                        startTime = DateTime.Now;
-                        isFirstLoop = false; 
+                        StartTime = DateTime.Now;
+                        IsFirstLoop = false; 
                     }
 
                     // de-serialize inbound message from robot using Google Protocol Buffer
@@ -258,9 +262,9 @@ namespace ExternalGuidedMotion
                     // display inbound message
                     DisplayInboundMessage(robot);
 
-                    xRobot = robot.FeedBack.Cartesian.Pos.X;
-                    yRobot = robot.FeedBack.Cartesian.Pos.Y;
-                    zRobot = robot.FeedBack.Cartesian.Pos.Z;
+                    XRobot = robot.FeedBack.Cartesian.Pos.X;
+                    YRobot = robot.FeedBack.Cartesian.Pos.Y;
+                    ZRobot = robot.FeedBack.Cartesian.Pos.Z;
 
                     // create a new outbound sensor message
                     EgmSensor.Builder sensor = EgmSensor.CreateBuilder();
@@ -273,7 +277,7 @@ namespace ExternalGuidedMotion
 
                         // send the udp message to the robot
                         int bytesSent = _udpServer.Send(memoryStream.ToArray(),
-                                           (int)memoryStream.Length, remoteEP);
+                                           (int)memoryStream.Length, remoteEp);
                         if (bytesSent < 0)
                         {
                             Console.WriteLine("Error send to robot");
@@ -326,9 +330,9 @@ namespace ExternalGuidedMotion
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
 
-            pc.SetX(x)
-              .SetY(y)
-              .SetZ(z);
+            pc.SetX(X)
+              .SetY(Y)
+              .SetZ(Z);
 
             pq.SetU0(0.0)
               .SetU1(0.0)
@@ -340,26 +344,24 @@ namespace ExternalGuidedMotion
 
             planned.SetCartesian(pos);  // bind pos object to planned
             sensor.SetPlanned(planned); // bind planned to sensor object
-
-            return;
         }
 
         // Start a thread to listen on inbound messages
         public void Start()
         {
-            _sensorThread = new Thread(new ThreadStart(SensorThread));
+            _sensorThread = new Thread(SensorThread);
             _sensorThread.Start();
         }
 
         // Stop and exit thread
         public void Stop()
         {
-            executionTime.Close();
-            positionfile.Close();
-            exitThread = true;
+            ExecutionTime.Close();
+            Positionfile.Close();
+            ExitThread = true;
             _sensorThread.Abort();
-            stopwatch.Stop();
-            stopwatch.Reset();
+            Stopwatch.Stop();
+            Stopwatch.Reset();
         }
     }  
 }

@@ -14,16 +14,16 @@ namespace ExternalGuidedMotion
     public class Path
     {
         public const double ANGLE = 45;
-        public int i = 1;
-        public double position { get; set; }
-        public double time { get; set; }
+        private int _i = 1;
+        public double Position { get; set; }
+        public double Time { get; set; }
         
-        public void Time(Object stateInfo)
+        public void StartPath()
         {
-            time = (double)(33 * i) / 1000;
-            double speed = CalculateSpeed(time);
-            position = CalculatePosition(speed, time);    
-            i++;
+            Time = (double)(33 * _i) / 1000;
+            double speed = CalculateSpeed(Time);
+            Position = CalculatePosition(speed, Time);    
+            _i++;
         }
 
         public double CalculateSpeed(double time)
