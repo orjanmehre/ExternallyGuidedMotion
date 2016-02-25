@@ -23,7 +23,7 @@ namespace ExternalGuidedMotion
         public bool ExitThread = false;
 
         public double Position { get; set; }
-        public double TimeElapsed = 0;
+        public double TimeElapsed { get; set; }
 
         public Path(Position _updatePos)
         {
@@ -33,6 +33,8 @@ namespace ExternalGuidedMotion
 
         public void PathThread()
         {
+            TimeElapsed = 0;
+            
             while (ExitThread == false)
             {
                 TimeElapsed = _stopwatch.ElapsedMilliseconds / 1000d;

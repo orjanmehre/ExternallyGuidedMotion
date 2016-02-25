@@ -62,10 +62,8 @@ namespace ExternalGuidedMotion
         public enum Mode
         {
             Default,
-            CameraWithPlot,
-            CameraWithoutPlot,
-            SimulatedDiscWithPlot,
-            SimulatedDiscWithoutPlot
+            Camera,
+            Simulate
         };
     }
 
@@ -85,24 +83,16 @@ namespace ExternalGuidedMotion
                     Console.WriteLine("args is null");
                     break;
 
-                case "Camera Plot":
-                    mode = Settings.Mode.CameraWithPlot;
-                    break;
-
                 case "Camera":
-                    mode = Settings.Mode.CameraWithoutPlot;
-                    break;
-
-                case "Simulate Plot":
-                    mode = Settings.Mode.SimulatedDiscWithPlot;
+                    mode = Settings.Mode.Camera;
                     break;
 
                 case "Simulate":
-                    mode = Settings.Mode.SimulatedDiscWithoutPlot;
+                    mode = Settings.Mode.Simulate;
                     break;
 
                 default:
-                    Console.WriteLine("Leagal options: camerap, camera, simulatep, simulate");
+                    Console.WriteLine("Leagal options: Camera, Simulate");
                     break;
             }
 
@@ -124,15 +114,16 @@ namespace ExternalGuidedMotion
         private UdpClient _udpServer;
         private uint _seqNumber = 0;
         private Settings.Mode mode;
-        private Camera camera = new Camera();
+        private Camera _camera;
+        private Position _position;
+        private Stopwatch _stopwatch;
+        private Position _position = new Position();
+        private bool _isFirstLoop = true;
 
-        public Stopwatch Stopwatch = new Stopwatch();
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", true);
         public TextWriter ExecutionTime = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\ExecutionTime.txt", true);
-        public DateTime StartTime = DateTime.Now;
-        public bool IsFirstLoop = true;
-        public TimerCallback Tcb;
+        
 
         public double XRobot { get; set; }
         public double YRobot { get; set; }
@@ -142,78 +133,55 @@ namespace ExternalGuidedMotion
         public int Z;
 
 
+
         public Sensor(Settings.Mode mode)
         {
             this.mode = mode;
             switch (mode)
             {
-                case Settings.Mode.CameraWithPlot:
-                    camera.StartCamera();
+                case Settings.Mode.Camera:
+                    _camera = new Camera();
+                    _camera.StartCamera();
+                    _stopwatch = new Stopwatch();
                     break;
 
-                case Settings.Mode.CameraWithoutPlot:
-                    camera.StartCamera();
+                case Settings.Mode.Simulate:
+                    _path = new Path(_position);
+                    _path.StartPath();
+                    _stopwatch = _path.TimeElapsed;
                     break;
 
-                case Settings.Mode.SimulatedDiscWithPlot:
-
-                    break;
-
-                case Settings.Mode.SimulatedDiscWithoutPlot:
-
-                    break;
-                    
+                default:
+                    break;        
             }
         }
 
-        // Get x and y position from the camera.
-        public void CameraXY()
+        public void PathSetPos()
         {
-            X = camera.X;
-            Y = camera.Y;
+            X = _position.X;
+            Y = -20;
             Z = 0;
         }
 
-        // Write the time which the camera use to take and process a new image. 
-        public void CameraWithPlot()
+        public void CameraSetPos()
         {
-            ExecutionTime.WriteLine(camera.timeElapsed);
-        }
-
-        // Get x and y position from the simulated disc
-
-        public void PathXY()
-        {
-            Path path = new Path();
-            // Convert the postition data from m to mm
-            X = path.Position * 1000;
-
-            // Set a limit for the robot down the ramp, to avoid "Mechanical unit close to joint bound" 
-            if (X > 1000)
-            {
-                X = 1000;
-            }
-
-            if (IsFirstLoop)
-            {
-               Y = - new Random().Next(0, 101);
-            }
-            
-            Z = 0;  
+            X = _camera.X;
+            Y = _camera.Y;
+            Z = 0;
         }
 
 
-        // Plot the position data of the disc and the robot. 
-        public void PathWithPlot()
+        public void SavePositionToFile()
         {
-            Positionfile.WriteLine(Stopwatch.ElapsedMilliseconds.ToString("#.##") + " " +
-                      X.ToString("#.##") + " " +
-                      Y.ToString("#.##") + " " +
-                      Z.ToString() + " " +
-                      XRobot.ToString("#.##") + " " +
-                      YRobot.ToString("#.##") + " " +
-                      ZRobot.ToString("#.##"));
+            Positionfile.WriteLine(_stopwatch.ElapsedMilliseconds.ToString("#.##") + " " +
+                        X.ToString("#.##") + " " +
+                        Y.ToString("#.##") + " " +
+                        Z.ToString() + " " +
+                        XRobot.ToString("#.##") + " " +
+                        YRobot.ToString("#.##") + " " +
+                        ZRobot.ToString("#.##"));
         }
+
 
         public void SensorThread()
         {
@@ -222,35 +190,25 @@ namespace ExternalGuidedMotion
             var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
 
             while (ExitThread == false)
-            {
-                Stopwatch.Start();
-
-                // Get the position data form the camera
-                if(mode == Settings.Mode.CameraWithoutPlot || mode == Settings.Mode.CameraWithPlot)
-                {
-                    CameraXY();
-                    IsFirstLoop = false;
-                }
-                // Get the position data from the simulated disc
-                else if(mode == Settings.Mode.SimulatedDiscWithPlot || mode == Settings.Mode.SimulatedDiscWithoutPlot)
-                {
-                    //PathXY(); 
-                }
-
-                else
-                {
-                    Console.WriteLine("No legal options");
-                }
-
+            
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
 
                 if (data != null)
-                {                    
-                    if (IsFirstLoop)
+                {
+                    if (mode == Settings.mode.Camera)
                     {
-                        StartTime = DateTime.Now;
-                        IsFirstLoop = false; 
+                        CameraSetPos();
+                    }
+
+                    else if (mode == Settings.mode.Simulate)
+                    {
+                        PathSetPos();
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("No leagal options!")
                     }
 
                     // de-serialize inbound message from robot using Google Protocol Buffer
@@ -280,18 +238,15 @@ namespace ExternalGuidedMotion
                             Console.WriteLine("Error send to robot");
                         }
                     }
+                    if (_isFirstLoop == true)
+                    {
+                        _path.StartDisc();
+                        _isFirstLoop = false;
+                    }
 
-                    // Write the elapsed time to file for logging. 
-                    if (mode == Settings.Mode.CameraWithPlot)
-                    {
-                        CameraWithPlot();
-                        PathWithPlot();
-                    }
-                    // Write the position data of the disc and robot to file
-                    else if (mode == Settings.Mode.SimulatedDiscWithPlot)
-                    {
-                        PathWithPlot();
-                    }
+                    // Write the postition to file
+                    SavePositionToFile();
+                   
                 }
             } 
         }
@@ -357,6 +312,7 @@ namespace ExternalGuidedMotion
             Positionfile.Close();
             ExitThread = true;
             _sensorThread.Abort();
+            _path.StopPath();
             Stopwatch.Stop();
             Stopwatch.Reset();
         }
