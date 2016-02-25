@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using abb.egm;
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
                     
 
@@ -78,32 +79,31 @@ namespace ExternalGuidedMotion
         {
             var mode = Settings.Mode.Default;
 
-            //Check for null array
-            if (args == null)
+            switch (args[0])
             {
-                Console.WriteLine("args is null"); 
-            }
+                case null:
+                    Console.WriteLine("args is null");
+                    break;
 
-            else if (args[0] == "camerap")
-            {
-                mode = Settings.Mode.CameraWithPlot;
-            }
-            else if (args[0] == "camera")
-            {
-                mode = Settings.Mode.CameraWithoutPlot;
-            }
-            else if (args[0] == "simulatep")
-            {
-                mode = Settings.Mode.SimulatedDiscWithPlot;
-            }
-            else if (args[0] == "simulate")
-            {
-                mode = Settings.Mode.SimulatedDiscWithoutPlot;
-            }
+                case "Camera Plot":
+                    mode = Settings.Mode.CameraWithPlot;
+                    break;
 
-            else
-            {
-                Console.WriteLine("Legal options: camerap, camera, simulatep, simulate");
+                case "Camera":
+                    mode = Settings.Mode.CameraWithoutPlot;
+                    break;
+
+                case "Simulate Plot":
+                    mode = Settings.Mode.SimulatedDiscWithPlot;
+                    break;
+
+                case "Simulate":
+                    mode = Settings.Mode.SimulatedDiscWithoutPlot;
+                    break;
+
+                default:
+                    Console.WriteLine("Leagal options: camerap, camera, simulatep, simulate");
+                    break;
             }
 
             Sensor s = new Sensor(mode);
@@ -114,7 +114,7 @@ namespace ExternalGuidedMotion
                     s.Stop();
                 };
 
-                Console.ReadLine();
+                Console.ReadLine();   
         }
     }
 
@@ -122,31 +122,29 @@ namespace ExternalGuidedMotion
     {
         private Thread _sensorThread;
         private UdpClient _udpServer;
-        public bool ExitThread = false;
         private uint _seqNumber = 0;
         private Settings.Mode mode;
-        public Stopwatch Stopwatch = new Stopwatch();
         private Camera camera = new Camera();
-        public TextWriter Positionfile = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\position.txt", true);
-        public TextWriter ExecutionTime = new StreamWriter(@"C:\Users\Robot\Documents\ABB_Masteroppgave EGM Orjan\ExternalGuidedMotion-master\ExecutionTime.txt", true);
+
+        public Stopwatch Stopwatch = new Stopwatch();
+        public bool ExitThread = false;
+        public TextWriter Positionfile = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", true);
+        public TextWriter ExecutionTime = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\ExecutionTime.txt", true);
         public DateTime StartTime = DateTime.Now;
+        public bool IsFirstLoop = true;
+        public TimerCallback Tcb;
 
         public double XRobot { get; set; }
         public double YRobot { get; set; }
         public double ZRobot { get; set; }
-
         public double X { get; set; }
         public double Y { get; set; }
         public int Z;
-
-        public bool IsFirstLoop = true;
-        public TimerCallback Tcb;
 
 
         public Sensor(Settings.Mode mode)
         {
             this.mode = mode;
-
             switch (mode)
             {
                 case Settings.Mode.CameraWithPlot:
@@ -158,15 +156,15 @@ namespace ExternalGuidedMotion
                     break;
 
                 case Settings.Mode.SimulatedDiscWithPlot:
-                    Path path = new Path();
+
                     break;
 
                 case Settings.Mode.SimulatedDiscWithoutPlot:
-                    path = new Path();
+
                     break;
+                    
             }
         }
-
 
         // Get x and y position from the camera.
         public void CameraXY()
@@ -183,6 +181,7 @@ namespace ExternalGuidedMotion
         }
 
         // Get x and y position from the simulated disc
+
         public void PathXY()
         {
             Path path = new Path();
@@ -203,6 +202,7 @@ namespace ExternalGuidedMotion
             Z = 0;  
         }
 
+
         // Plot the position data of the disc and the robot. 
         public void PathWithPlot()
         {
@@ -214,8 +214,6 @@ namespace ExternalGuidedMotion
                       YRobot.ToString("#.##") + " " +
                       ZRobot.ToString("#.##"));
         }
-
-
 
         public void SensorThread()
         {
@@ -236,7 +234,7 @@ namespace ExternalGuidedMotion
                 // Get the position data from the simulated disc
                 else if(mode == Settings.Mode.SimulatedDiscWithPlot || mode == Settings.Mode.SimulatedDiscWithoutPlot)
                 {
-                    PathXY(); 
+                    //PathXY(); 
                 }
 
                 else
@@ -248,8 +246,7 @@ namespace ExternalGuidedMotion
                 var data = _udpServer.Receive(ref remoteEp);
 
                 if (data != null)
-                {
-                    
+                {                    
                     if (IsFirstLoop)
                     {
                         StartTime = DateTime.Now;

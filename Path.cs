@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 
 
 /// <summary>
@@ -13,17 +15,31 @@ namespace ExternalGuidedMotion
 {
     public class Path
     {
+        private Stopwatch _stopwatch;
+        private Thread _pathThread;
+        private Position _updatePos;
+
         public const double ANGLE = 45;
-        private int _i = 1;
+        public bool ExitThread = false;
+
         public double Position { get; set; }
-        public double Time { get; set; }
-        
-        public void StartPath()
+        public double TimeElapsed = 0;
+
+        public Path(Position _updatePos)
         {
-            Time = (double)(33 * _i) / 1000;
-            double speed = CalculateSpeed(Time);
-            Position = CalculatePosition(speed, Time);    
-            _i++;
+            _stopwatch = new Stopwatch();
+            this._updatePos = _updatePos;
+        }
+
+        public void PathThread()
+        {
+            while (ExitThread == false)
+            {
+                TimeElapsed = _stopwatch.ElapsedMilliseconds / 1000d;
+                double speed = CalculateSpeed(TimeElapsed);
+                Position = CalculatePosition(speed, TimeElapsed);
+                _updatePos.SetPosition(Position);
+            }
         }
 
         public double CalculateSpeed(double time)
@@ -38,6 +54,23 @@ namespace ExternalGuidedMotion
             double half = (double)1 / 2;
             double position = half * speed * time;
             return position;
+        }
+
+        public void StartDisc()
+        {
+            _stopwatch.Start();
+        }
+
+        public void StartPath()
+        {
+            _pathThread = new Thread(PathThread);
+            _pathThread.Start();
+        }
+
+        public void StopPath()
+        {
+            ExitThread = true;
+            _pathThread.Abort();
         }
     }
 }
