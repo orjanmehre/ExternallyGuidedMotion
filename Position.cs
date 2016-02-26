@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-
+﻿
 /// <summary>
 /// Binding class between Program and Path.
 /// Is made to avoid problems when executing two different thread.
@@ -11,13 +10,13 @@ namespace ExternalGuidedMotion
    {
        public double X { get; set; }
 
-       public void SetPosition(double Position)
+       public void SetPosition(double position)
         {
-            X = Position * 1000;
+            X = position * 1000;
 
-            if (X > 1000)
+            if (X > 3000)
             {
-                X = 1000;
+                X = 3000;
             }
         }
     }

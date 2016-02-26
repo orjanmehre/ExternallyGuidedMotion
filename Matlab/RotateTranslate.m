@@ -11,11 +11,11 @@ name = 'v500';
 
 %% Choose plot
 plotPosition = 1; 
-plotVelocity = 1; 
-plotAcceleration = 1; 
+plotVelocity = 0; 
+plotAcceleration = 0; 
 plotMeanPos = 1;
-plotMeanVelocity = 1;
-plotMeanAcceleration = 1;
+plotMeanVelocity = 0;
+plotMeanAcceleration = 0;
 writeProcessedDataToFile = 0;
 
 %%

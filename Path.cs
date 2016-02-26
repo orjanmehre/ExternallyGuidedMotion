@@ -19,7 +19,7 @@ namespace ExternalGuidedMotion
         private Thread _pathThread;
         private Position _updatePos;
 
-        public const double ANGLE = 45;
+        public const double ANGLE = 30;
         public bool ExitThread = false;
 
         public double Position { get; set; }

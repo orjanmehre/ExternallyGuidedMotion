@@ -4,9 +4,8 @@ using System.Net;
 using System.Net.Sockets;
 using abb.egm;
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
-                    
+using System.Timers;
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -117,21 +116,23 @@ namespace ExternalGuidedMotion
         private Camera _camera;
         private Position _position;
         private Stopwatch _stopwatch;
-        private Position _position = new Position();
+        private Path _path;
+        private double _time; 
         private bool _isFirstLoop = true;
+        private System.Timers.Timer _newPosIntervalTimer;
+        private double _newPosInterval = 33;
+        private int _z;
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", true);
         public TextWriter ExecutionTime = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\ExecutionTime.txt", true);
         
-
-        public double XRobot { get; set; }
-        public double YRobot { get; set; }
-        public double ZRobot { get; set; }
-        public double X { get; set; }
-        public double Y { get; set; }
-        public int Z;
-
+        private double _xRobot { get; set; }
+        private double _yRobot { get; set; }
+        private double _zRobot { get; set; }
+        private double _x { get; set; }
+        private double _y { get; set; }
+        
 
 
         public Sensor(Settings.Mode mode)
@@ -146,40 +147,50 @@ namespace ExternalGuidedMotion
                     break;
 
                 case Settings.Mode.Simulate:
+                    _position = new Position();
                     _path = new Path(_position);
                     _path.StartPath();
-                    _stopwatch = _path.TimeElapsed;
                     break;
 
                 default:
+                    Console.WriteLine("Leagal options: Camera, Simulate");
                     break;        
             }
         }
 
-        public void PathSetPos()
+        public void PathSetPos(Object source, ElapsedEventArgs e)
         {
-            X = _position.X;
-            Y = -20;
-            Z = 0;
+            _x = _position.X;
+            _y = -38;
+            _z = 0;
+            _time = _path.TimeElapsed;
         }
 
         public void CameraSetPos()
         {
-            X = _camera.X;
-            Y = _camera.Y;
-            Z = 0;
+            _x = _camera.X;
+            _y = _camera.Y;
+            _z = 0;
+            _time = _stopwatch.ElapsedMilliseconds;
+        }
+
+        public void SetTimerInterval()
+        {
+            _newPosIntervalTimer = new System.Timers.Timer(_newPosInterval);
+            _newPosIntervalTimer.Elapsed += PathSetPos;
+            _newPosIntervalTimer.Start();
         }
 
 
         public void SavePositionToFile()
         {
-            Positionfile.WriteLine(_stopwatch.ElapsedMilliseconds.ToString("#.##") + " " +
-                        X.ToString("#.##") + " " +
-                        Y.ToString("#.##") + " " +
-                        Z.ToString() + " " +
-                        XRobot.ToString("#.##") + " " +
-                        YRobot.ToString("#.##") + " " +
-                        ZRobot.ToString("#.##"));
+            Positionfile.WriteLine(_time.ToString("#.##") + " " +
+                        _x.ToString("#.##") + " " +
+                        _y.ToString("#.##") + " " +
+                        _z.ToString() + " " +
+                        _xRobot.ToString("#.##") + " " +
+                        _yRobot.ToString("#.##") + " " +
+                        _zRobot.ToString("#.##"));
         }
 
 
@@ -190,36 +201,23 @@ namespace ExternalGuidedMotion
             var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
 
             while (ExitThread == false)
-            
+            { 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
 
                 if (data != null)
                 {
-                    if (mode == Settings.mode.Camera)
-                    {
-                        CameraSetPos();
-                    }
-
-                    else if (mode == Settings.mode.Simulate)
-                    {
-                        PathSetPos();
-                    }
-
-                    else
-                    {
-                        Console.WriteLine("No leagal options!")
-                    }
-
+                    Debug.WriteLine("T: " + _time + " X: " + _x + " Y: " +_y + " Z: " + _z);
+                    //Debug.WriteLine("XR: " + _xRobot + " YR: " + _yRobot + " ZR: " + _zRobot);
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
 
                     // display inbound message
                     DisplayInboundMessage(robot);
 
-                    XRobot = robot.FeedBack.Cartesian.Pos.X;
-                    YRobot = robot.FeedBack.Cartesian.Pos.Y;
-                    ZRobot = robot.FeedBack.Cartesian.Pos.Z;
+                    _xRobot = robot.FeedBack.Cartesian.Pos.X;
+                    _yRobot = robot.FeedBack.Cartesian.Pos.Y;
+                    _zRobot = robot.FeedBack.Cartesian.Pos.Z;
 
                     // create a new outbound sensor message
                     EgmSensor.Builder sensor = EgmSensor.CreateBuilder();
@@ -229,6 +227,7 @@ namespace ExternalGuidedMotion
                     {
                         EgmSensor sensorMessage = sensor.Build();
                         sensorMessage.WriteTo(memoryStream);
+                        Debug.WriteLine(sensorMessage);
 
                         // send the udp message to the robot
                         int bytesSent = _udpServer.Send(memoryStream.ToArray(),
@@ -240,13 +239,13 @@ namespace ExternalGuidedMotion
                     }
                     if (_isFirstLoop == true)
                     {
+                        SetTimerInterval();
                         _path.StartDisc();
                         _isFirstLoop = false;
                     }
 
                     // Write the postition to file
-                    SavePositionToFile();
-                   
+                    SavePositionToFile(); 
                 }
             } 
         }
@@ -258,6 +257,7 @@ namespace ExternalGuidedMotion
             {
                 Console.WriteLine("Seq={0} tm={1}",
                     robot.Header.Seqno.ToString(), robot.Header.Tm.ToString());
+                //Debug.WriteLine(robot);
             }
             else
             {
@@ -282,9 +282,9 @@ namespace ExternalGuidedMotion
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
 
-            pc.SetX(X)
-              .SetY(Y)
-              .SetZ(Z);
+            pc.SetX(_x)
+              .SetY(_y)
+              .SetZ(_z);
 
             pq.SetU0(0.0)
               .SetU1(0.0)
@@ -313,10 +313,13 @@ namespace ExternalGuidedMotion
             ExitThread = true;
             _sensorThread.Abort();
             _path.StopPath();
-            Stopwatch.Stop();
-            Stopwatch.Reset();
+            if (mode == Settings.Mode.Camera)
+            {
+                _stopwatch.Stop();
+                _stopwatch.Reset();
+            }
         }
-    }  
+    }
 }
 
 
