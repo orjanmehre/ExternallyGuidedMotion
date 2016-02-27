@@ -12,6 +12,8 @@
 
 Matlab/Plot/
 Matlab/Test/
+executionTime.txt
+position.txt
 
 # Build results
 [Dd]ebug/
