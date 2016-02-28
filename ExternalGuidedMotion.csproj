@@ -110,7 +110,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="Position.cs" />
-    <Compile Include="Path.cs" />
+    <Compile Include="SimDisc.cs" />
     <Compile Include="Egm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

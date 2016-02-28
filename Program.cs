@@ -15,7 +15,7 @@ using System.Timers;
 // 1) Download protobuf-csharp binaries from https://code.google.com/p/protobuf-csharp-port/
 // 2) Unpack the zip file
 // 3) Copy the egm.proto file to a sub catalogue where protobuf-csharp was un-zipped, e.g. ~\protobuf-csharp\tools\egm
-// 4) Generate an egm C# file from the egm.proto file by typing in a windows console: protogen .\egm\egm.proto --proto_path=.\egm
+// 4) Generate an egm C# file from the egm.proto file by typing in a windows console: protogen .\egm\egm.proto --proto_SimDisc=.\egm
 // 5) Create a C# console application in Visual Studio
 // 6) Install Nuget, in Visual Studio, click Tools and then Extension Manager. Goto to Online, find the NuGet Package Manager extension and click Download.
 // 7) Install protobuf-csharp via NuGet, select in Visual Studio, Tools Nuget Package Manager and then Package Manager Console and type PM>Install-Package Google.ProtocolBuffers
@@ -116,7 +116,7 @@ namespace ExternalGuidedMotion
         private Camera _camera;
         private Position _position;
         private Stopwatch _stopwatch;
-        private Path _path;
+        private SimDisc _SimDisc;
         private double _time; 
         private bool _isFirstLoop = true;
         private System.Timers.Timer _newPosIntervalTimer;
@@ -124,8 +124,8 @@ namespace ExternalGuidedMotion
         private int _z;
 
         public bool ExitThread = false;
-        public TextWriter Positionfile = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\position.txt", true);
-        public TextWriter ExecutionTime = new StreamWriter(@"C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\ExecutionTime.txt", true);
+        public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
+        public TextWriter ExecutionTime = new StreamWriter(@"..\...\ExecutionTime.txt", true);
         
         private double _xRobot { get; set; }
         private double _yRobot { get; set; }
@@ -148,8 +148,8 @@ namespace ExternalGuidedMotion
 
                 case Settings.Mode.Simulate:
                     _position = new Position();
-                    _path = new Path(_position);
-                    _path.StartPath();
+                    _SimDisc = new SimDisc(_position);
+                    _SimDisc.StartSimDisc();
                     break;
 
                 default:
@@ -158,12 +158,19 @@ namespace ExternalGuidedMotion
             }
         }
 
-        public void PathSetPos(Object source, ElapsedEventArgs e)
+        public void SimDiscSetPos(Object source, ElapsedEventArgs e)
         {
-            _x = _position.X;
+            if (_position.X < 1000)
+            {
+                _x = _position.X;
+            }
+            else
+            {
+                _x = 1000;
+            }
             _y = -38;
             _z = 0;
-            _time = _path.TimeElapsed;
+            _time = _SimDisc.TimeElapsed;
         }
 
         public void CameraSetPos()
@@ -177,7 +184,7 @@ namespace ExternalGuidedMotion
         public void SetTimerInterval()
         {
             _newPosIntervalTimer = new System.Timers.Timer(_newPosInterval);
-            _newPosIntervalTimer.Elapsed += PathSetPos;
+            _newPosIntervalTimer.Elapsed += SimDiscSetPos;
             _newPosIntervalTimer.Start();
         }
 
@@ -207,8 +214,6 @@ namespace ExternalGuidedMotion
 
                 if (data != null)
                 {
-                    Debug.WriteLine("T: " + _time + " X: " + _x + " Y: " +_y + " Z: " + _z);
-                    //Debug.WriteLine("XR: " + _xRobot + " YR: " + _yRobot + " ZR: " + _zRobot);
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
 
@@ -227,7 +232,6 @@ namespace ExternalGuidedMotion
                     {
                         EgmSensor sensorMessage = sensor.Build();
                         sensorMessage.WriteTo(memoryStream);
-                        Debug.WriteLine(sensorMessage);
 
                         // send the udp message to the robot
                         int bytesSent = _udpServer.Send(memoryStream.ToArray(),
@@ -240,7 +244,7 @@ namespace ExternalGuidedMotion
                     if (_isFirstLoop == true)
                     {
                         SetTimerInterval();
-                        _path.StartDisc();
+                        _SimDisc.StartDisc();
                         _isFirstLoop = false;
                     }
 
@@ -257,7 +261,6 @@ namespace ExternalGuidedMotion
             {
                 Console.WriteLine("Seq={0} tm={1}",
                     robot.Header.Seqno.ToString(), robot.Header.Tm.ToString());
-                //Debug.WriteLine(robot);
             }
             else
             {
@@ -265,7 +268,6 @@ namespace ExternalGuidedMotion
             }
         }
 
-        //////////////////////////////////////////////////////////////////////////
         // Create a sensor message to send to the robot
         void CreateSensorMessage(EgmSensor.Builder sensor)
         {
@@ -282,6 +284,7 @@ namespace ExternalGuidedMotion
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
 
+            Debug.WriteLine(_time + " " + _x);
             pc.SetX(_x)
               .SetY(_y)
               .SetZ(_z);
@@ -312,7 +315,7 @@ namespace ExternalGuidedMotion
             Positionfile.Close();
             ExitThread = true;
             _sensorThread.Abort();
-            _path.StopPath();
+            _SimDisc.StopSimDisc();
             if (mode == Settings.Mode.Camera)
             {
                 _stopwatch.Stop();
