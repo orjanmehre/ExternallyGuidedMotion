@@ -23,7 +23,6 @@ C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.Pr
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.dll
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.xml
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.xml
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csprojResolveAssemblyReference.cache
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.exe
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.pdb
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.dll
@@ -46,3 +45,4 @@ C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Re
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.PlatformServices.xml
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csproj.App.config
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csproj.ResolveComReference.cache
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csprojResolveAssemblyReference.cache

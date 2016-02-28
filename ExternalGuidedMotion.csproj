@@ -108,6 +108,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camera.cs" />
+    <Compile Include="Position.cs" />
     <Compile Include="Path.cs" />
     <Compile Include="Egm.cs" />
     <Compile Include="Program.cs" />
