@@ -6,6 +6,7 @@ using abb.egm;
 using System.Diagnostics;
 using System.Threading;
 using System.Timers;
+using System.Threading.Tasks;
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,8 +77,7 @@ namespace ExternalGuidedMotion
         static void Main(string[] args)
         {
             var mode = Settings.Mode.Default;
-            ConsoleKeyInfo start;
-
+            
             switch (args[0])
             {
                 case null:
@@ -92,9 +92,6 @@ namespace ExternalGuidedMotion
                 case "Simulate":
                     mode = Settings.Mode.Simulate;
                     Console.WriteLine("Simulate");
-                    Console.Write("Type s to start the disk: ");
-                    Console.ReadKey();
-                    start = Console.ReadKey();
                     break;
 
                 default:
@@ -123,23 +120,22 @@ namespace ExternalGuidedMotion
         private Stopwatch _stopwatch;
         private SimDisc _SimDisc;
         private double _time; 
-        private bool _isFirstLoop = true;
         private System.Timers.Timer _newPosIntervalTimer;
         private double _newPosInterval = 33;
-        private int _z;
+        private double _z;
+        private bool _hasDiscStarted = false;
+        private ConsoleKeyInfo _start;
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
         public TextWriter ExecutionTime = new StreamWriter(@"..\...\ExecutionTime.txt", true);
         
-        private double _xRobot { get; set; }
-        private double _yRobot { get; set; }
-        private double _zRobot { get; set; }
-        private double _x { get; set; }
-        private double _y { get; set; }
+        private double XRobot { get; set; }
+        private double YRobot { get; set; }
+        private double ZRobot { get; set; }
+        private double X { get; set; }
+        private double Y { get; set; }
         
-
-
         public Sensor(Settings.Mode mode)
         {
             this.mode = mode;
@@ -155,6 +151,8 @@ namespace ExternalGuidedMotion
                     _position = new Position();
                     _SimDisc = new SimDisc(_position);
                     _SimDisc.StartSimDisc();
+                    _stopwatch = new Stopwatch();
+                    Task.Factory.StartNew(StartDiscFromConsole);
                     break;
 
                 default:
@@ -165,24 +163,25 @@ namespace ExternalGuidedMotion
 
         public void SimDiscSetPos(Object source, ElapsedEventArgs e)
         {
+            _time = _stopwatch.ElapsedMilliseconds;
             if (_position.X < 1000)
             {
-                _x = _position.X;
+                X = _position.X;
             }
             else
             {
-                _x = 1000;
+                X = 1000;
             }
-            _y = -100;
-            _z = 0;
+
+            Y = _position.Y;
+            _z = _position.Z;
         }
 
         public void CameraSetPos()
         {
-            _x = _camera.X;
-            _y = _camera.Y;
+            X = _camera.X;
+            Y = _camera.Y;
             _z = 0;
-            _time = _stopwatch.ElapsedMilliseconds;
         }
 
         public void SetTimerInterval()
@@ -195,14 +194,29 @@ namespace ExternalGuidedMotion
 
         public void SavePositionToFile()
         {
-            _time = _position.time;
-            Positionfile.WriteLine(_time.ToString("#.####") + " " +
-                        _x.ToString("#.##") + " " +
-                        _y.ToString("#.##") + " " +
-                        _z.ToString() + " " +
-                        _xRobot.ToString("#.##") + " " +
-                        _yRobot.ToString("#.##") + " " +
-                        _zRobot.ToString("#.##"));
+            _time = _stopwatch.ElapsedMilliseconds;
+            Positionfile.WriteLine(_time.ToString("0.0000") + " " +
+                        X.ToString("0.00") + " " +
+                        Y.ToString("0.00") + " " +
+                        _z.ToString("0.00") + " " +
+                        XRobot.ToString("0.00") + " " +
+                        YRobot.ToString("0.00") + " " +
+                        ZRobot.ToString("0.00"));
+        }
+
+        private void StartDiscFromConsole()
+        {
+            Console.Write("Type s to start the disc: ");
+            _start = Console.ReadKey();
+            if (_start.KeyChar == 's' || _start.KeyChar == 'S')
+            {
+                _SimDisc.StartDisc();
+                _hasDiscStarted = true; 
+            }
+            else if (_start.KeyChar != 's' || _start.KeyChar != 'S')
+            {
+                Console.WriteLine("Unvalid char, leagal options: s, S");
+            }
         }
 
 
@@ -211,9 +225,14 @@ namespace ExternalGuidedMotion
             // create an udp client and listen on any address and the port IpPortNumber
             _udpServer = new UdpClient(Program.IpPortNumber);
             var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
-
+            _stopwatch.Start();
+            SetTimerInterval();
+          
             while (ExitThread == false)
-            { 
+            {
+                // Write the postition to file
+                SavePositionToFile();
+
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
 
@@ -222,9 +241,9 @@ namespace ExternalGuidedMotion
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
 
-                    _xRobot = robot.FeedBack.Cartesian.Pos.X;
-                    _yRobot = robot.FeedBack.Cartesian.Pos.Y;
-                    _zRobot = robot.FeedBack.Cartesian.Pos.Z;
+                    XRobot = robot.FeedBack.Cartesian.Pos.X;
+                    YRobot = robot.FeedBack.Cartesian.Pos.Y;
+                    ZRobot = robot.FeedBack.Cartesian.Pos.Z;
 
                     // create a new outbound sensor message
                     EgmSensor.Builder sensor = EgmSensor.CreateBuilder();
@@ -243,16 +262,9 @@ namespace ExternalGuidedMotion
                             Console.WriteLine("Error send to robot");
                         }
                     }
-                    if (_isFirstLoop == true)
-                    {
-                        SetTimerInterval();
-                        _SimDisc.StartDisc();
-                        _isFirstLoop = false;
-                    }
-
-                    // Write the postition to file
-                    SavePositionToFile(); 
+                   
                 }
+                
             } 
         }
 
@@ -272,9 +284,8 @@ namespace ExternalGuidedMotion
             EgmQuaternion.Builder pq = new EgmQuaternion.Builder();
             EgmCartesian.Builder pc = new EgmCartesian.Builder();
 
-            Debug.WriteLine(_time + " " + _x);
-            pc.SetX(_x)
-              .SetY(_y)
+            pc.SetX(X)
+              .SetY(Y)
               .SetZ(_z);
 
             pq.SetU0(0.0)
@@ -304,11 +315,9 @@ namespace ExternalGuidedMotion
             ExitThread = true;
             _sensorThread.Abort();
             _SimDisc.StopSimDisc();
-            if (mode == Settings.Mode.Camera)
-            {
-                _stopwatch.Stop();
-                _stopwatch.Reset();
-            }
+            _stopwatch.Stop();
+            _stopwatch.Reset();
+            
         }
     }
 }

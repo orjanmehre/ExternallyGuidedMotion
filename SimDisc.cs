@@ -18,26 +18,39 @@ namespace ExternalGuidedMotion
         private Stopwatch _stopwatch;
         private Thread _SimDiscThread;
         private Position _updatePos;
+        private bool _hasDiscStarted; 
 
         public const double ANGLE = 10;
         public bool ExitThread = false;
 
         public double Position { get; set; }
+        public double Y { get; set; }
+        public double Z { get; set; }
         public double TimeElapsed { get; set; }
 
         public SimDisc(Position _updatePos)
         {
             _stopwatch = new Stopwatch();
             this._updatePos = _updatePos;
+            _updatePos.SetPosition(0, 0, 0, 0);
         }
 
         public void SimDiscThread()
         {
-            TimeElapsed = 0;
-            Position = 0;
-
+           
             while (ExitThread == false)
             {
+                if (_hasDiscStarted)
+                {
+                    Y = -0.12;
+                    Z = 0;
+                }
+                else
+                {
+                    Y = 0;
+                    Z = 0; 
+                }
+                
                 TimeElapsed = _stopwatch.ElapsedMilliseconds / 1000d;
                 double speed = CalculateSpeed(TimeElapsed);
                 Position = CalculatePosition(speed, TimeElapsed);
@@ -45,7 +58,7 @@ namespace ExternalGuidedMotion
                 {
                     Position = 1;
                 }
-                _updatePos.SetPosition(Position,TimeElapsed);
+                _updatePos.SetPosition(Position, Y, Z, TimeElapsed);
             }
         }
 
@@ -66,6 +79,7 @@ namespace ExternalGuidedMotion
         public void StartDisc()
         {
             _stopwatch.Start();
+            _hasDiscStarted = true;
         }
 
         public void StartSimDisc()
