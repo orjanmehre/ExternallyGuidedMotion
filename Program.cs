@@ -71,10 +71,12 @@ namespace ExternalGuidedMotion
         // listen on this port for inbound messages
         public static int IpPortNumber = 6510;
         public static int CameraIpPortNumber = 3000;
+        
 
         static void Main(string[] args)
         {
             var mode = Settings.Mode.Default;
+            ConsoleKeyInfo start;
 
             switch (args[0])
             {
@@ -90,6 +92,9 @@ namespace ExternalGuidedMotion
                 case "Simulate":
                     mode = Settings.Mode.Simulate;
                     Console.WriteLine("Simulate");
+                    Console.Write("Type s to start the disk: ");
+                    Console.ReadKey();
+                    start = Console.ReadKey();
                     break;
 
                 default:
@@ -99,14 +104,11 @@ namespace ExternalGuidedMotion
 
             Sensor s = new Sensor(mode);
                 s.Start();
-            Console.ReadKey();
-
+    
             Console.CancelKeyPress += delegate
             {
                 s.Stop();
             };
-
-            
         }
     }
 

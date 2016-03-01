@@ -17,8 +17,6 @@ C:\Users\Orjan\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMot
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\ExternalGuidedMotion.exe.config
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\ExternalGuidedMotion.exe
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\ExternalGuidedMotion.pdb
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.dll
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.xml
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.xml
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.exe
