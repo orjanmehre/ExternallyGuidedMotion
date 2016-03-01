@@ -20,7 +20,7 @@ namespace ExternalGuidedMotion
         private Position _updatePos;
         private bool _hasDiscStarted; 
 
-        public const double ANGLE = 10;
+        public const double ANGLE = 50;
         public bool ExitThread = false;
 
         public double Position { get; set; }
@@ -42,7 +42,7 @@ namespace ExternalGuidedMotion
             {
                 if (_hasDiscStarted)
                 {
-                    Y = -0.12;
+                    Y = -0.1;
                     Z = 0;
                 }
                 else

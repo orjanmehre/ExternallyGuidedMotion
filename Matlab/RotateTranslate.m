@@ -7,7 +7,7 @@ workobjects coordinate system to the robot base cord.system.
 %%
 clc;
 clear all; 
-name = 'v500';
+name = '50Deg';
 
 %% Choose plot
 plotPosition = 1; 
@@ -21,16 +21,17 @@ writeProcessedDataToFile = 0;
 %%
 cx = 1;
 cy = 2;
-cz = 3; 
+cz = 3;
+plotFrom = 50;
 
 % x, y and z coordinates for origo in the new cord.system.
-TransX = 83.663994925;
-TransY = -716.879172118;
-TransZ = 531.771925931;
+TransX = 83.0;
+TransY = -716.0;
+TransZ = 700.0;
 
 % The rotation angles (same as in RS)
 theta = -30; 
-gamma = 150; % 180- angle of the ramp
+gamma = 130; % 180- angle of the ramp
 tau = 0; 
 
 %Open file
@@ -104,22 +105,26 @@ meanPosRob = mean(robotXYZ,2);
 %% Plot position in XYZ
 if plotPosition == 1
     figure1 = figure;
-    plot(time(1:end), newXYZcord(1:size(newXYZcord,1),cx),'-r');hold on; 
-    plot(time(1:end), robotXYZ(1:size(robotXYZ,1),cx),'-b'); hold on; 
+    plot(time(plotFrom:end), newXYZcord(plotFrom:size(newXYZcord,1),cx),'-r');hold on; 
+    plot(time(plotFrom:end), robotXYZ(plotFrom:size(robotXYZ,1),cx),'-b'); hold on; 
 
-    plot(time(1:end), newXYZcord(1:size(newXYZcord,1),cy),'-k'); hold on; 
-    plot(time(1:end), robotXYZ(1:size(robotXYZ,1),cy),'-g');hold on;
+    plot(time(plotFrom:end), newXYZcord(plotFrom:size(newXYZcord,1),cy),'-k'); hold on; 
+    plot(time(plotFrom:end), robotXYZ(plotFrom:size(robotXYZ,1),cy),'-g');hold on;
 
-    plot(time(1:end), newXYZcord(1:size(newXYZcord,1),cz),'-m'); hold on; 
-    plot(time(1:end), robotXYZ(1:size(robotXYZ,1),cz),'-c');
-
+    plot(time(plotFrom:end), newXYZcord(plotFrom:size(newXYZcord,1),cz),'-m'); hold on; 
+    plot(time(plotFrom:end), robotXYZ(plotFrom:size(robotXYZ,1),cz),'-c');
+    
     legend('Disc X position','Robot X position','Disc Y position',...
-        'Robot Y position','Disc Z position','Robot Z position' )
-    xlabel('Time [s]')
+        'Robot Y position','Disc Z position','Robot Z position',...
+        'Location','northoutside')
+    legend('boxoff')
+    xlabel('Time [ms]')
     ylabel('Position [mm]')
     grid on;
     filename = ['Plot/positionXYZ',name,'.eps'];
     saveas(figure1, filename);
+    filenamejpg = ['Plot/positionXYZJPG',name,'.jpg'];
+    saveas(figure1, filenamejpg);
 end
 
 %% Plot mean position
@@ -128,9 +133,15 @@ if plotMeanPos == 1
     plot(time(50:end),meanPosDisc(50:end),'b',time(50:end),...
         meanPosRob(50:end),'r');
     grid on;
-    legend('Mean position disc', 'Mean position robot');
+    legend('Mean position disc', 'Mean position robot','Location',...
+        'northoutside','Orientation','horizontal');
+    legend('boxoff');
+    xlabel('Time [ms]')
+    ylabel('Position [mm]')
     filename = ['Plot/meanPosition',name,'.eps'];
     saveas(figure2, filename);
+    filenamejpg = ['Plot/meanPositionJPG',name,'.jpg'];
+    saveas(figure2, filenamejpg);
 end
 
 %% Plot velocity in XYZ
@@ -170,7 +181,8 @@ if plotVelocity == 1
     plot(time(50:end-1), velZ(50:end),'m', time(50:end-1),...
         velRZ(50:end), 'c'); 
     legend('Disc X velocity','Robot X velocity','Disc Y velocity',...
-        'Robot Y velocity','Disc Z velocity','Robot Z velocity' )
+        'Robot Y velocity','Disc Z velocity','Robot Z velocity',...
+        'Location','eastoutside')
     grid on;
     filename = ['Plot/velocityXYZ',name,'.eps'];
     saveas(figure3, filename);
@@ -189,7 +201,8 @@ end
         plot(time(50:end-1), meanVelDisc(50:end), time(50:end-1),...
             meanVelRob(50:end)); 
         grid on; 
-        legend('Mean speed disc', 'Mean speed robot');
+        legend('Mean speed disc', 'Mean speed robot''Location',...
+            'northoutside','Orientation','horizontal');
         filename = ['Plot/meanVelocity',name,'.eps'];
         saveas(figure4, filename);
     end
@@ -220,7 +233,8 @@ end
             acelRZ(100:end),'c'); 
         legend('Disc X acceleration','Robot X acceleration',...
             'Disc Y acceleration', 'Robot Y acceleration',...
-            'Disc Z acceleration','Robot Z acceleration' );
+            'Disc Z acceleration','Robot Z acceleration',...
+            'Location','eastoutside');
         grid on; 
         filename = ['Plot/accelerationXYZ',name,'.eps'];
         saveas(figure5, filename);
@@ -238,7 +252,8 @@ end
         plot(time(100:end-2), meanAccelDisc(100:end),time(100:end-2),...
             meanAccelRob(100:end));
         grid on; 
-        legend('Mean acceleration disc', 'Mean acceleration robot');
+        legend('Mean acceleration disc', 'Mean acceleration robot',...
+            'Location','northoutside','Orientation','horizontal');
         filename = ['Plot/meanAcceleration',name,'.eps'];
         saveas(figure6, filename);
     end

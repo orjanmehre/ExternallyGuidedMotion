@@ -1,0 +1,16 @@
+MODULE ConstantVelocity
+    
+    VAR robtarget startPoint:=[[-245,-1268,172],[0.01333, 0.49224, 0.87029, 0.01092],[-1,-2,0,1],[9E9,9E9,9E9,9E9,9E9,9E9]];
+    VAR robtarget endPoint:=[[83.663994925,-716.879172118,531.771925931],[0.01333, 0.49224, 0.87029, 0.01092],[-1,-2,0,1],[9E9,9E9,9E9,9E9,9E9,9E9]];
+    
+    TASK PERS wobjdata Start:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[-245,-1268,172],[0.01333, 0.49224, 0.87029, 0.01092]]];
+    TASK PERS tooldata tSuctionCup:=[TRUE,[[120,0,57],[0.01333, 0.49224, 0.87029, 0.01092]],[1,[0,0,1],[1,0,0,0],0,0,0]];
+    
+    
+    PROC main()
+        
+        MoveJ startPoint,v50,fine,tSuctionCup;
+        
+        
+    ENDPROC
+ENDMODULE
