@@ -14,9 +14,9 @@ namespace ExternalGuidedMotion
         {
             X = position * 1000;
 
-            if (X > 3000)
+            if (X > 1000)
             {
-                X = 3000;
+                X = 1000;
             }
         }
     }
