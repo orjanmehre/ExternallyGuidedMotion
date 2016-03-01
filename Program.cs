@@ -84,10 +84,12 @@ namespace ExternalGuidedMotion
 
                 case "Camera":
                     mode = Settings.Mode.Camera;
+                    Console.WriteLine("Camera");
                     break;
 
                 case "Simulate":
                     mode = Settings.Mode.Simulate;
+                    Console.WriteLine("Simulate");
                     break;
 
                 default:
@@ -97,13 +99,14 @@ namespace ExternalGuidedMotion
 
             Sensor s = new Sensor(mode);
                 s.Start();
+            Console.ReadKey();
 
-                Console.CancelKeyPress += delegate
-                {
-                    s.Stop();
-                };
+            Console.CancelKeyPress += delegate
+            {
+                s.Stop();
+            };
 
-                Console.ReadLine();   
+            
         }
     }
 
@@ -168,9 +171,8 @@ namespace ExternalGuidedMotion
             {
                 _x = 1000;
             }
-            _y = -38;
+            _y = -100;
             _z = 0;
-            _time = _SimDisc.TimeElapsed;
         }
 
         public void CameraSetPos()
@@ -191,7 +193,8 @@ namespace ExternalGuidedMotion
 
         public void SavePositionToFile()
         {
-            Positionfile.WriteLine(_time.ToString("#.##") + " " +
+            _time = _position.time;
+            Positionfile.WriteLine(_time.ToString("#.####") + " " +
                         _x.ToString("#.##") + " " +
                         _y.ToString("#.##") + " " +
                         _z.ToString() + " " +
@@ -216,9 +219,6 @@ namespace ExternalGuidedMotion
                 {
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
-
-                    // display inbound message
-                    DisplayInboundMessage(robot);
 
                     _xRobot = robot.FeedBack.Cartesian.Pos.X;
                     _yRobot = robot.FeedBack.Cartesian.Pos.Y;
@@ -252,20 +252,6 @@ namespace ExternalGuidedMotion
                     SavePositionToFile(); 
                 }
             } 
-        }
-
-        // Display message from robot
-        void DisplayInboundMessage(EgmRobot robot)
-        {
-            if (robot.HasHeader && robot.Header.HasSeqno && robot.Header.HasTm)
-            {
-                Console.WriteLine("Seq={0} tm={1}",
-                    robot.Header.Seqno.ToString(), robot.Header.Tm.ToString());
-            }
-            else
-            {
-                Console.WriteLine("No header in robot message");
-            }
         }
 
         // Create a sensor message to send to the robot

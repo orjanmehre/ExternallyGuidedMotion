@@ -19,7 +19,7 @@ namespace ExternalGuidedMotion
         private Thread _SimDiscThread;
         private Position _updatePos;
 
-        public const double ANGLE = 30;
+        public const double ANGLE = 10;
         public bool ExitThread = false;
 
         public double Position { get; set; }
@@ -34,17 +34,18 @@ namespace ExternalGuidedMotion
         public void SimDiscThread()
         {
             TimeElapsed = 0;
-            
+            Position = 0;
+
             while (ExitThread == false)
             {
                 TimeElapsed = _stopwatch.ElapsedMilliseconds / 1000d;
                 double speed = CalculateSpeed(TimeElapsed);
                 Position = CalculatePosition(speed, TimeElapsed);
-                if (Position > 1000)
+                if (Position > 1)
                 {
-                    Position = 1000;
+                    Position = 1;
                 }
-                _updatePos.SetPosition(Position);
+                _updatePos.SetPosition(Position,TimeElapsed);
             }
         }
 

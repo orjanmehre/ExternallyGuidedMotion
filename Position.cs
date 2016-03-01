@@ -9,11 +9,14 @@ namespace ExternalGuidedMotion
    public class Position
    {
        public double X { get; set; }
+       public double time { get; set; }
 
-       public void SetPosition(double position)
+       public void SetPosition(double position, double time)
         {
-            X = position * 1000;
+            this.time = time;
 
+            X = position * 1000;
+            
             if (X > 1000)
             {
                 X = 1000;

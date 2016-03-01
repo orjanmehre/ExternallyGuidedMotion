@@ -104,14 +104,14 @@ meanPosRob = mean(robotXYZ,2);
 %% Plot position in XYZ
 if plotPosition == 1
     figure1 = figure;
-    plot(time(50:end), newXYZcord(50:size(newXYZcord,1),cx),'-r');hold on; 
-    plot(time(50:end), robotXYZ(50:size(robotXYZ,1),cx),'-b'); hold on; 
+    plot(time(1:end), newXYZcord(1:size(newXYZcord,1),cx),'-r');hold on; 
+    plot(time(1:end), robotXYZ(1:size(robotXYZ,1),cx),'-b'); hold on; 
 
-    plot(time(50:end), newXYZcord(50:size(newXYZcord,1),cy),'-k'); hold on; 
-    plot(time(50:end), robotXYZ(50:size(robotXYZ,1),cy),'-g');hold on;
+    plot(time(1:end), newXYZcord(1:size(newXYZcord,1),cy),'-k'); hold on; 
+    plot(time(1:end), robotXYZ(1:size(robotXYZ,1),cy),'-g');hold on;
 
-    plot(time(50:end), newXYZcord(50:size(newXYZcord,1),cz),'-m'); hold on; 
-    plot(time(50:end), robotXYZ(50:size(robotXYZ,1),cz),'-c');
+    plot(time(1:end), newXYZcord(1:size(newXYZcord,1),cz),'-m'); hold on; 
+    plot(time(1:end), robotXYZ(1:size(robotXYZ,1),cz),'-c');
 
     legend('Disc X position','Robot X position','Disc Y position',...
         'Robot Y position','Disc Z position','Robot Z position' )
