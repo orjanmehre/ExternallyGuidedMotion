@@ -24,7 +24,7 @@ end
 [N,X] = hist(time,unique(time));
 figure;
 bar(X,N, 1)
-xlim([0 50]);
+xlim([10 23]);
 xlabel('Delay[ms]')
 ylabel('Number of occurences')
 title(['Time delay, number of samples: ' num2str(size(time,2))])

@@ -72,8 +72,7 @@ namespace ExternalGuidedMotion
         // listen on this port for inbound messages
         public static int IpPortNumber = 6510;
         public static int CameraIpPortNumber = 3000;
-        
-
+      
         static void Main(string[] args)
         {
             var mode = Settings.Mode.Default;
@@ -125,10 +124,12 @@ namespace ExternalGuidedMotion
         private double _z;
         private bool _hasDiscStarted = false;
         private ConsoleKeyInfo _start;
+        private bool _isSimulate = false;
+        private bool _isCamera = false;
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
-        public TextWriter ExecutionTime = new StreamWriter(@"..\...\ExecutionTime.txt", true);
+        
         
         private double XRobot { get; set; }
         private double YRobot { get; set; }
@@ -145,6 +146,7 @@ namespace ExternalGuidedMotion
                     _camera = new Camera();
                     _camera.StartCamera();
                     _stopwatch = new Stopwatch();
+                    _isCamera = true; 
                     break;
 
                 case Settings.Mode.Simulate:
@@ -153,6 +155,7 @@ namespace ExternalGuidedMotion
                     _SimDisc.StartSimDisc();
                     _stopwatch = new Stopwatch();
                     Task.Factory.StartNew(StartDiscFromConsole);
+                    _isSimulate = true;
                     break;
 
                 default:
@@ -226,8 +229,13 @@ namespace ExternalGuidedMotion
             _udpServer = new UdpClient(Program.IpPortNumber);
             var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
             _stopwatch.Start();
-            SetTimerInterval();
-          
+
+            if (_isSimulate)
+            {
+                SetTimerInterval();
+            }
+           
+            
             while (ExitThread == false)
             {
                 // Write the postition to file
@@ -238,6 +246,11 @@ namespace ExternalGuidedMotion
 
                 if (data != null)
                 {
+                    if (_isCamera)
+                    {
+                        CameraSetPos();
+                    }
+
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
 
@@ -262,9 +275,7 @@ namespace ExternalGuidedMotion
                             Console.WriteLine("Error send to robot");
                         }
                     }
-                   
-                }
-                
+                }  
             } 
         }
 
@@ -310,11 +321,17 @@ namespace ExternalGuidedMotion
         // Stop and exit thread
         public void Stop()
         {
-            ExecutionTime.Close();
             Positionfile.Close();
             ExitThread = true;
             _sensorThread.Abort();
-            _SimDisc.StopSimDisc();
+            if (_isSimulate)
+            {
+                _SimDisc.StopSimDisc();
+            }
+            else if (_isCamera)
+            {
+                _camera.StopCamera();
+            }
             _stopwatch.Stop();
             _stopwatch.Reset();
             
