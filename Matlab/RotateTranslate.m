@@ -7,16 +7,16 @@ workobjects coordinate system to the robot base cord.system.
 %%
 clc;
 clear all; 
-name = '50Deg';
+name = 'v100';
 
 %% Choose plot
 plotPosition = 1; 
-plotVelocity = 0; 
+plotVelocity = 1; 
 plotAcceleration = 0; 
 plotMeanPos = 1;
-plotMeanVelocity = 0;
-plotMeanAcceleration = 0;
-writeProcessedDataToFile = 0;
+plotMeanVelocity = 1;
+plotMeanAcceleration = 1;
+writeProcessedDataToFile = 1;
 
 %%
 cx = 1;
@@ -31,7 +31,7 @@ TransZ = 700.0;
 
 % The rotation angles (same as in RS)
 theta = -30; 
-gamma = 130; % 180- angle of the ramp
+gamma = 150; % 180- angle of the ramp
 tau = 0; 
 
 %Open file

@@ -8,7 +8,7 @@ is the output.
 %%
 clc;
 clear all; 
-
+name = 'ET2v4000';
 fileId = fopen('executionTime.txt');
 
 C = textscan(fileId, '%s');
@@ -21,13 +21,22 @@ for i = 1: 1: size(C{1,1},1)
     time(i) = str2double(strrep(tempTime, ',' , '.'));
 end
 
+Maximum = max(time)
+Minimum = min(time)
+
 [N,X] = hist(time,unique(time));
-figure;
+figure1 = figure;
 bar(X,N, 1)
-xlim([10 23]);
+xlim([Minimum-1 Maximum+1]);
 xlabel('Delay[ms]')
 ylabel('Number of occurences')
 title(['Time delay, number of samples: ' num2str(size(time,2))])
+
+filename = ['Plot/histogramDelay',name,'.eps'];
+saveas(figure1, filename);
+
+filenamejpg = ['Plot/histogramDelayJPG',name,'.jpg'];
+saveas(figure1, filenamejpg);
 
 
 % Storing the data in a cell array

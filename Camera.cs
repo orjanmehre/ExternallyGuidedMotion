@@ -45,13 +45,13 @@ namespace ExternalGuidedMotion
 
                 var cameraData = _cameraUdpServer.Receive(ref cameraRemoteEP);
 
-                if(cameraData != null)
+                if (cameraData != null)
                 {
                     var cameraXY = Encoding.Default.GetString(cameraData);
 
                     string[] XY = cameraXY.Split(',');
 
-                    for(int i = 0; i < XY.Length; i++)
+                    for (int i = 0; i < XY.Length; i++)
                     {
                         XY[i] = XY[i].Trim();
                     }
@@ -85,6 +85,5 @@ namespace ExternalGuidedMotion
             _cameraThread.Abort();
             ExecutionTime.Close();
         }
-
     }
 }
