@@ -25,12 +25,15 @@ namespace ExternalGuidedMotion
 
         public double X { get; set; }
         public double Y { get; set; }
+        public double TimeStamp { get; set; }
         public double timeElapsed { get; set; }
+
+        private int _seqnum;
 
 
         public void WriteExecutionTimeToFile()
         {
-            ExecutionTime.WriteLine(timeElapsed.ToString("0.00"));
+            ExecutionTime.WriteLine(_seqnum.ToString() + " " + timeElapsed.ToString("0.00"));
         }
 
         public void CameraThread()
@@ -47,20 +50,24 @@ namespace ExternalGuidedMotion
 
                 if (cameraData != null)
                 {
-                    var cameraXY = Encoding.Default.GetString(cameraData);
+                    var cameraXYTS = Encoding.Default.GetString(cameraData);
 
-                    string[] XY = cameraXY.Split(',');
+                    string[] XYTS = cameraXYTS.Split(',');
 
-                    for (int i = 0; i < XY.Length; i++)
+                    for (int i = 0; i < XYTS.Length; i++)
                     {
-                        XY[i] = XY[i].Trim();
+                        XYTS[i] = XYTS[i].Trim();
                     }
 
-                    string tempX = XY[0].Replace('.', ',');
-                    string tempY = XY[1].Replace('.', ',');
+                    string tempX = XYTS[0].Replace('.', ',');
+                    string tempY = XYTS[1].Replace('.', ',');
+                    string tempT = XYTS[2].Replace('.', ',');
+                    string tempS = XYTS[3].Replace('.', ',');
 
                     X = Convert.ToDouble(tempX);
                     Y = Convert.ToDouble(tempY);
+                    TimeStamp = Convert.ToDouble(tempT);
+                    _seqnum = Convert.ToInt32(tempS);
 
                     timeElapsed = stopwatch.ElapsedMilliseconds;
                     stopwatch.Stop();
