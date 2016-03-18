@@ -121,21 +121,23 @@ namespace ExternalGuidedMotion
         private double _time; 
         private System.Timers.Timer _newPosIntervalTimer;
         private double _newPosInterval = 33;
-        private double _z;
         private bool _hasDiscStarted = false;
         private ConsoleKeyInfo _start;
         private bool _isSimulate = false;
         private bool _isCamera = false;
+        private double _prevX;
+        private double _prevY;
+        private double _prevZ;
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
-        
-        
+
         private double XRobot { get; set; }
         private double YRobot { get; set; }
         private double ZRobot { get; set; }
         private double X { get; set; }
         private double Y { get; set; }
+        private double Z { get; set; }
         
         public Sensor(Settings.Mode mode)
         {
@@ -177,14 +179,14 @@ namespace ExternalGuidedMotion
             }
 
             Y = _position.Y;
-            _z = _position.Z;
+            Z = _position.Z;
         }
 
         public void CameraSetPos()
         {
             X = _camera.X;
             Y = _camera.Y;
-            _z = 0;
+            Z = 0;
         }
 
         public void SetTimerInterval()
@@ -201,7 +203,7 @@ namespace ExternalGuidedMotion
             Positionfile.WriteLine(_time.ToString("0.0000") + " " +
                         X.ToString("0.00") + " " +
                         Y.ToString("0.00") + " " +
-                        _z.ToString("0.00") + " " +
+                        Z.ToString("0.00") + " " +
                         XRobot.ToString("0.00") + " " +
                         YRobot.ToString("0.00") + " " +
                         ZRobot.ToString("0.00"));
@@ -239,7 +241,14 @@ namespace ExternalGuidedMotion
             while (ExitThread == false)
             {
                 // Write the postition to file
-                SavePositionToFile();
+                if (_prevX != X || _prevY != Y || _prevZ != Z)
+                {
+                    SavePositionToFile();
+                    _prevX = X;
+                    _prevY = Y;
+                    _prevZ = Z;
+                }
+                
 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
@@ -297,7 +306,7 @@ namespace ExternalGuidedMotion
 
             pc.SetX(X)
               .SetY(Y)
-              .SetZ(_z);
+              .SetZ(Z);
 
             pq.SetU0(0.0)
               .SetU1(0.0)
@@ -314,6 +323,9 @@ namespace ExternalGuidedMotion
         // Start a thread to listen on inbound messages
         public void Start()
         {
+            _prevX = 0;
+            _prevY = 0;
+            _prevZ = 0;
             _sensorThread = new Thread(SensorThread);
             _sensorThread.Start();
         }
