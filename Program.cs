@@ -120,14 +120,13 @@ namespace ExternalGuidedMotion
         private SimDisc _SimDisc;
         private double _time; 
         private System.Timers.Timer _newPosIntervalTimer;
-        private double _newPosInterval = 33;
+        private double _newPosInterval = 16;
         private bool _hasDiscStarted = false;
         private ConsoleKeyInfo _start;
         private bool _isSimulate = false;
         private bool _isCamera = false;
-        private double _prevX;
-        private double _prevY;
-        private double _prevZ;
+        private int _prevX;
+        private int _nowX;
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
@@ -201,12 +200,12 @@ namespace ExternalGuidedMotion
         {
             _time = _stopwatch.ElapsedMilliseconds;
             Positionfile.WriteLine(_time.ToString("0.0000") + " " +
-                        X.ToString("0.00") + " " +
-                        Y.ToString("0.00") + " " +
-                        Z.ToString("0.00") + " " +
-                        XRobot.ToString("0.00") + " " +
-                        YRobot.ToString("0.00") + " " +
-                        ZRobot.ToString("0.00"));
+                        Convert.ToInt32(X).ToString("0.00") + " " +
+                        Convert.ToInt32(Y).ToString("0.00") + " " +
+                        Convert.ToInt32(Z).ToString("0.00") + " " +
+                        Convert.ToInt32(XRobot).ToString("0.00") + " " +
+                        Convert.ToInt32(YRobot).ToString("0.00") + " " +
+                        Convert.ToInt32(ZRobot).ToString("0.00"));
         }
 
         private void StartDiscFromConsole()
@@ -241,13 +240,13 @@ namespace ExternalGuidedMotion
             while (ExitThread == false)
             {
                 // Write the postition to file
-                if (_prevX != X || _prevY != Y || _prevZ != Z)
+                _nowX = Convert.ToInt32(X);
+                if (_prevX != _nowX)
                 {
                     SavePositionToFile();
-                    _prevX = X;
-                    _prevY = Y;
-                    _prevZ = Z;
+                    _prevX = _nowX;
                 }
+
                 
 
                 // Get the message from robot
@@ -324,8 +323,7 @@ namespace ExternalGuidedMotion
         public void Start()
         {
             _prevX = 0;
-            _prevY = 0;
-            _prevZ = 0;
+            _nowX = 0;
             _sensorThread = new Thread(SensorThread);
             _sensorThread.Start();
         }
