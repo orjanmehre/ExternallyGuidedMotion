@@ -125,8 +125,7 @@ namespace ExternalGuidedMotion
         private ConsoleKeyInfo _start;
         private bool _isSimulate = false;
         private bool _isCamera = false;
-        private int _prevX;
-        private int _nowX;
+        private double _prevX; 
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
@@ -240,14 +239,12 @@ namespace ExternalGuidedMotion
             while (ExitThread == false)
             {
                 // Write the postition to file
-                _nowX = Convert.ToInt32(X);
-                if (_prevX != _nowX)
+                if (_prevX != X)
                 {
                     SavePositionToFile();
-                    _prevX = _nowX;
+                    _prevX = X;
                 }
-
-                
+                    
 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
@@ -323,7 +320,6 @@ namespace ExternalGuidedMotion
         public void Start()
         {
             _prevX = 0;
-            _nowX = 0;
             _sensorThread = new Thread(SensorThread);
             _sensorThread.Start();
         }
