@@ -16,7 +16,11 @@ plotVelocity                =	1;
 plotMeanVelocity            =   1;
 plotAcceleration            =   1; 
 plotMeanAcceleration        =   1;
+<<<<<<< HEAD
 writeProcessedDataToFile    =   0;
+=======
+writeProcessedDataToFile    =   1;
+>>>>>>> origin/dev
 
 %%
 cx = 1;
@@ -25,9 +29,15 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
+<<<<<<< HEAD
 TransX = 83.0;
 TransY = -716.0;
 TransZ = 531.0;
+=======
+TransX = 83.663994925;
+TransY = -716.879172118;
+TransZ = 531.771925931;
+>>>>>>> origin/dev
 
 % The rotation angles (same as in RS)
 theta = -30; 
@@ -128,8 +138,13 @@ end
 %% Plot mean position
 if plotMeanPos == 1
     figure2 = figure;
+<<<<<<< HEAD
     plot(time(plotFrom:end),meanPosDisc(plotFrom:end),'r',time(plotFrom:end),...
         meanPosRob(plotFrom:end),'b');
+=======
+    plot(time(1:end),meanPosDisc(1:end),'r',time(1:end),...
+        meanPosRob(1:end),'b');
+>>>>>>> origin/dev
     grid on;
     legend('Mean position disc', 'Mean position robot','Location',...
         'northoutside','Orientation','horizontal');
@@ -142,7 +157,13 @@ if plotMeanPos == 1
 end
 
 %% Plot velocity in XYZ
+<<<<<<< HEAD
 if plotVelocity == 1 
+=======
+if plotVelocity == 1
+    N = 1; 
+    wts = 1/N*ones(N,1);
+>>>>>>> origin/dev
     translatedNewXYZCord = newXYZcord';
     translatedRobotXYZ = robotXYZ';
     
@@ -164,18 +185,29 @@ if plotVelocity == 1
     velRZ = diff(posRZ);
   
     figure3 = figure;
+<<<<<<< HEAD
     plot(time(plotFrom:end-1), velX(plotFrom:end),'r', time(plotFrom:end-1),...
         velRX(plotFrom:end), 'b'); hold on;
     plot(time(plotFrom:end-1), velY(plotFrom:end),'k', time(plotFrom:end-1),...
         velRY(plotFrom:end), 'g'); hold on;
     plot(time(plotFrom:end-1), velZ(plotFrom:end),'m', time(plotFrom:end-1),...
         velRZ(plotFrom:end), 'c'); 
+=======
+    plot(time(1:end-N), velX(1:end),'r', time(1:end-N),...
+        velRX(1:end), 'b'); hold on;
+    plot(time(1:end-N), velY(1:end),'k', time(1:end-N),...
+        velRY(1:end), 'g'); hold on;
+    plot(time(1:end-N), velZ(1:end),'m', time(1:end-N),...
+        velRZ(1:end), 'c'); 
+>>>>>>> origin/dev
     legend('Disc X velocity','Robot X velocity','Disc Y velocity',...
         'Robot Y velocity','Disc Z velocity','Robot Z velocity',...
         'Location','eastoutside')
     grid on;
     filename = ['Plot/velocityXYZ',name,'.eps'];
     saveas(figure3, filename);
+    filenamejpg = ['Plot/velocityXYZJPG',name,'.jpg'];
+    saveas(figure3, filenamejpg);
 end
 
 
@@ -194,13 +226,20 @@ meanVelDiscfilt = filter(filterfilt, 1, meanVelDisc);
 meanVelRobfilt = filter(filterfilt, 1, meanVelRob);
         
         figure4 = figure;
+<<<<<<< HEAD
         plot(time(plotFrom:end-1), meanVelDiscfilt(plotFrom:end), time(plotFrom:end-1),...
             meanVelRobfilt(plotFrom:end)); 
+=======
+        plot(time(1:end-N), meanVelDisc(1:end),'r', time(1:end-N),...
+            meanVelRob(1:end),'b'); 
+>>>>>>> origin/dev
         grid on; 
         legend('Mean speed disc', 'Mean speed robot','Location',...
             'northoutside','Orientation','horizontal');
         filename = ['Plot/meanVelocity',name,'.eps'];
         saveas(figure4, filename);
+        filenamejpg = ['Plot/meanVelocityJPG',name,'.jpg'];
+        saveas(figure4, filenamejpg);
     end
     
     
@@ -214,12 +253,21 @@ meanVelRobfilt = filter(filterfilt, 1, meanVelRob);
         acelRZ = diff(velZ);
         
         figure5 = figure;
+<<<<<<< HEAD
         plot(time(plotFrom:end-2), acelX(plotFrom:end),'r', time(plotFrom:end-2),...
             acelRX(plotFrom:end),'b'); hold on;
         plot(time(plotFrom:end-2), acelY(plotFrom:end),'k', time(plotFrom:end-2),...
             acelRY(plotFrom:end),'g'); hold on;
         plot(time(plotFrom:end-2), acelZ(plotFrom:end),'m' ,time(plotFrom:end-2),...
             acelRZ(plotFrom:end),'c'); 
+=======
+        plot(time(1:end-2), acelX(1:end),'r', time(1:end-2),...
+            acelRX(1:end),'b'); hold on;
+        plot(time(1:end-2), acelY(1:end),'k', time(1:end-2),...
+            acelRY(1:end),'g'); hold on;
+        plot(time(1:end-2), acelZ(1:end),'m' ,time(1:end-2),...
+            acelRZ(1:end),'c'); 
+>>>>>>> origin/dev
         legend('Disc X acceleration','Robot X acceleration',...
             'Disc Y acceleration', 'Robot Y acceleration',...
             'Disc Z acceleration','Robot Z acceleration',...
@@ -227,6 +275,8 @@ meanVelRobfilt = filter(filterfilt, 1, meanVelRob);
         grid on; 
         filename = ['Plot/accelerationXYZ',name,'.eps'];
         saveas(figure5, filename);
+        filenamejpg = ['Plot/accelerationXYZJPG',name,'.jpg'];
+        saveas(figure5, filenamejpg);
     end
     
     %% Plot mean acceleration
@@ -235,19 +285,26 @@ meanVelRobfilt = filter(filterfilt, 1, meanVelRob);
         meanAccelRob = diff(meanVelRob);
         
         figure6 = figure;
+<<<<<<< HEAD
         plot(time(plotFrom:end-2), meanAccelDisc(plotFrom:end),time(plotFrom:end-2),...
             meanAccelRob(plotFrom:end));
+=======
+        plot(time(1:end-2), meanAccelDisc(1:end),'r',time(1:end-2),...
+            meanAccelRob(1:end),'b');
+>>>>>>> origin/dev
         grid on; 
         legend('Mean acceleration disc', 'Mean acceleration robot',...
             'Location','northoutside','Orientation','horizontal');
         filename = ['Plot/meanAcceleration',name,'.eps'];
         saveas(figure6, filename);
+        filenamejpg = ['Plot/meanAccelerationJPG',name,'.jpg'];
+        saveas(figure6, filenamejpg);
     end
     
 
 %% Writing the processed data to txt file.
 if writeProcessedDataToFile == 1
-    filename = ['Plot/processedData',name,'.txt'];
+    filename = ['Plot/ProcessedData/processedData',name,'.txt'];
     fileIDW = fopen(filename,'wt');
     fprintf(fileIDW, 'Time\tRobotX\tRobotY\tRobotZ\tDiscX\tDiscY\tDiscZ\n')
     for i = 1 :1 : size(robotXYZ,1)

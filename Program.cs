@@ -120,13 +120,17 @@ namespace ExternalGuidedMotion
         private SimDisc _SimDisc;
         private double _time; 
         private System.Timers.Timer _newPosIntervalTimer;
-        private double _newPosInterval = 33;
+        private double _newPosInterval = 16;
         private bool _hasDiscStarted = false;
         private ConsoleKeyInfo _start;
         private bool _isSimulate = false;
         private bool _isCamera = false;
+<<<<<<< HEAD
         private double _seqNum;
         private double _prevSeqNum;
+=======
+        private double _prevX; 
+>>>>>>> origin/dev
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
@@ -201,12 +205,12 @@ namespace ExternalGuidedMotion
         {
             _time = _stopwatch.ElapsedMilliseconds;
             Positionfile.WriteLine(_time.ToString("0.0000") + " " +
-                        X.ToString("0.00") + " " +
-                        Y.ToString("0.00") + " " +
-                        Z.ToString("0.00") + " " +
-                        XRobot.ToString("0.00") + " " +
-                        YRobot.ToString("0.00") + " " +
-                        ZRobot.ToString("0.00"));
+                        Convert.ToInt32(X).ToString("0.00") + " " +
+                        Convert.ToInt32(Y).ToString("0.00") + " " +
+                        Convert.ToInt32(Z).ToString("0.00") + " " +
+                        Convert.ToInt32(XRobot).ToString("0.00") + " " +
+                        Convert.ToInt32(YRobot).ToString("0.00") + " " +
+                        Convert.ToInt32(ZRobot).ToString("0.00"));
         }
 
         private void StartDiscFromConsole()
@@ -241,12 +245,19 @@ namespace ExternalGuidedMotion
             while (ExitThread == false)
             {
                 // Write the postition to file
+<<<<<<< HEAD
                 if (_seqNum > _prevSeqNum)
                 {
                     SavePositionToFile();
                     _prevSeqNum = _seqNum;
+=======
+                if (_prevX != X)
+                {
+                    SavePositionToFile();
+                    _prevX = X;
+>>>>>>> origin/dev
                 }
-                
+                    
 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
@@ -321,8 +332,12 @@ namespace ExternalGuidedMotion
         // Start a thread to listen on inbound messages
         public void Start()
         {
+<<<<<<< HEAD
             _seqNum = 0;
             _prevSeqNum = 0;
+=======
+            _prevX = 0;
+>>>>>>> origin/dev
             _sensorThread = new Thread(SensorThread);
             _sensorThread.Start();
         }

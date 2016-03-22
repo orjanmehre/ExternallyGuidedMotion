@@ -1,3 +1,3 @@
-#Loaded keys in C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\Robotstudio\Systems\IRB140_6kg_0.81m_typeC_1\INTERNAL\keystr.txt:
+#Loaded keys in C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\Robotstudio\Systems\IRB140_6kg_0.81m_typeC_1\INTERNAL\keystr.txt:
 RKKKKKZJJUcv4KKKKKKKKh
 taknZgGGAZk	1
