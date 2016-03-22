@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="KalmanFilter.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="SimDisc.cs" />
     <Compile Include="Egm.cs" />

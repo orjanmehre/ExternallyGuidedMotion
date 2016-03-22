@@ -125,9 +125,8 @@ namespace ExternalGuidedMotion
         private ConsoleKeyInfo _start;
         private bool _isSimulate = false;
         private bool _isCamera = false;
-        private double _prevX;
-        private double _prevY;
-        private double _prevZ;
+        private double _seqNum;
+        private double _prevSeqNum;
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
@@ -187,6 +186,7 @@ namespace ExternalGuidedMotion
             X = _camera.X;
             Y = _camera.Y;
             Z = 0;
+            _seqNum = _camera.Seqnum;
         }
 
         public void SetTimerInterval()
@@ -241,12 +241,10 @@ namespace ExternalGuidedMotion
             while (ExitThread == false)
             {
                 // Write the postition to file
-                if (_prevX != X || _prevY != Y || _prevZ != Z)
+                if (_seqNum > _prevSeqNum)
                 {
                     SavePositionToFile();
-                    _prevX = X;
-                    _prevY = Y;
-                    _prevZ = Z;
+                    _prevSeqNum = _seqNum;
                 }
                 
 
@@ -323,9 +321,8 @@ namespace ExternalGuidedMotion
         // Start a thread to listen on inbound messages
         public void Start()
         {
-            _prevX = 0;
-            _prevY = 0;
-            _prevZ = 0;
+            _seqNum = 0;
+            _prevSeqNum = 0;
             _sensorThread = new Thread(SensorThread);
             _sensorThread.Start();
         }

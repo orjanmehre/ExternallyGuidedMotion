@@ -27,13 +27,14 @@ namespace ExternalGuidedMotion
         public double Y { get; set; }
         public double TimeStamp { get; set; }
         public double timeElapsed { get; set; }
+        public double Seqnum { get; set; }
 
-        private int _seqnum;
+
 
 
         public void WriteExecutionTimeToFile()
         {
-            ExecutionTime.WriteLine(_seqnum.ToString() + " " + timeElapsed.ToString("0.00"));
+            ExecutionTime.WriteLine(Seqnum.ToString() + " " + timeElapsed.ToString("0.00"));
         }
 
         public void CameraThread()
@@ -67,7 +68,7 @@ namespace ExternalGuidedMotion
                     X = Convert.ToDouble(tempX);
                     Y = Convert.ToDouble(tempY);
                     TimeStamp = Convert.ToDouble(tempT);
-                    _seqnum = Convert.ToInt32(tempS);
+                    Seqnum = Convert.ToInt32(tempS);
 
                     timeElapsed = stopwatch.ElapsedMilliseconds;
                     stopwatch.Stop();
