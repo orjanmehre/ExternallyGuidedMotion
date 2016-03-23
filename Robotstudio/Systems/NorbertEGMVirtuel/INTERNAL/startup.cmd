@@ -1,3 +1,6 @@
+# Added by RobotStudio
+console
+# End RobotStudio
 #
 # Property of ABB Vasteras/Sweden. All rights reserved.
 # Copyright 2003.
