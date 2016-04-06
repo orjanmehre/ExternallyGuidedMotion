@@ -201,7 +201,7 @@ namespace ExternalGuidedMotion
         public void SavePositionToFile()
         {
             _time = _stopwatch.ElapsedMilliseconds;
-            Positionfile.WriteLine(_time.ToString("0.0000") + " " +
+            Positionfile.WriteLine(_time.ToString("0.00") + " " +
                         Convert.ToInt32(X).ToString("0.00") + " " +
                         Convert.ToInt32(Y).ToString("0.00") + " " +
                         Convert.ToInt32(Z).ToString("0.00") + " " +

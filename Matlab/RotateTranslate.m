@@ -18,7 +18,6 @@ plotAcceleration            =   1;
 plotMeanAcceleration        =   1;
 writeProcessedDataToFile    =   0;
 
-
 %%
 cx = 1;
 cy = 2;
@@ -26,7 +25,6 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
-
 TransX = 83.0;
 TransY = -716.0;
 TransZ = 531.0;
@@ -37,7 +35,7 @@ TransZ = 700.771925931;
 
 % The rotation angles (same as in RS)
 theta = -30; 
-gamma = 150; % 180- angle of the ramp
+gamma = 150; % 180 minus angle of the ramp
 tau = 0; 
 
 %Open file
@@ -122,10 +120,18 @@ robotXYZi(1:end,1) = smooth(robotXYZi(1:end,1), 500, 'loess');
 robotXYZi(1:end,2) = smooth(robotXYZi(1:end,2), 500, 'loess');
 robotXYZi(1:end,3) = smooth(robotXYZi(1:end,3), 500, 'loess');
 
+% Find mean distance for the disc
+for i = 1: 1 : size(newXYZcordi,1)
+        meanPosDisc(i,1) = sqrt((newXYZcordi(i,1)).^2 + ...
+            (newXYZcordi(i,2)).^2 + (newXYZcordi(i,3)).^2);
+end
 
-% Find the mean between the position in XYZ -direction
-meanPosDisc = mean(newXYZcordi,2);
-meanPosRob = mean(robotXYZi,2);
+% Find mean distance for the robot
+for i = 1: 1 : size(robotXYZi,1)
+        meanPosRob(i,1) = sqrt((robotXYZi(i,1)).^2 + ...
+            (robotXYZi(i,2)).^2 + (robotXYZi(i,3)).^2);       
+end
+
 
 %% Plot position in XYZ
 if plotPosition == 1
@@ -204,6 +210,8 @@ if plotVelocity == 1
     legend('Disc X velocity','Robot X velocity','Disc Y velocity',...
         'Robot Y velocity','Disc Z velocity','Robot Z velocity',...
         'Location','eastoutside')
+    xlabel('Time [ms]')
+    ylabel('Velocity [mm/ms]')
     grid on;
     filename = ['Plot/velocityXYZ',name,'.eps'];
     saveas(figure3, filename);
@@ -211,18 +219,16 @@ if plotVelocity == 1
     saveas(figure3, filenamejpg);
 end
 
-
     %% Plot mean velocity
     if plotMeanVelocity == 1
-        transMeanPos = meanPosDisc';
-        transMeanRob = meanPosRob';
-      
-        meanVelDisc = diff(meanPosDisc);
-        meanVelRob = diff(meanPosRob);
+        meanVelDisc = sqrt((velX).^2+(velY).^2+(velZ).^2);
+        meanVelRob = sqrt((velRX).^2+(velRY).^2+(velRZ).^2);
         
         figure4 = figure;
         plot(timei(plotFrom:end-1), meanVelDisc(plotFrom:end),...
             timei(plotFrom:end-1), meanVelRob(plotFrom:end)); 
+        xlabel('Time [ms]')
+        ylabel('Velocity [mm/ms]')
         grid on; 
         legend('Mean speed disc', 'Mean speed robot','Location',...
             'northoutside','Orientation','horizontal');
@@ -231,7 +237,6 @@ end
         filenamejpg = ['Plot/meanVelocityJPG',name,'.jpg'];
         saveas(figure4, filenamejpg);
     end
-    
     
     %% Plot acceleration in XYZ
     if plotAcceleration == 1
@@ -254,6 +259,8 @@ end
             'Disc Y acceleration', 'Robot Y acceleration',...
             'Disc Z acceleration','Robot Z acceleration',...
             'Location','eastoutside');
+        xlabel('Time [ms]')
+        ylabel('Acceleration [mm/ms^2]')
         grid on; 
         filename = ['Plot/accelerationXYZ',name,'.eps'];
         saveas(figure5, filename);
@@ -269,7 +276,8 @@ end
         figure6 = figure;
         plot(timei(plotFrom:end-2), meanAccelDisc(plotFrom:end),...
             timei(plotFrom:end-2), meanAccelRob(plotFrom:end));
-
+        xlabel('Time [ms]')
+        ylabel('Acceleration [mm/ms^2]')
         grid on; 
         legend('Mean acceleration disc', 'Mean acceleration robot',...
             'Location','northoutside','Orientation','horizontal');
@@ -279,7 +287,6 @@ end
         saveas(figure6, filenamejpg);
     end
     
-
 %% Writing the processed data to txt file.
 if writeProcessedDataToFile == 1
     filename = ['Plot/ProcessedData/processedData',name,'.txt'];
