@@ -25,17 +25,13 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
-TransX = 83.0;
-TransY = -716.0;
-TransZ = 531.0;
-
 TransX = 83.663994925;
 TransY = -716.879172118;
-TransZ = 700.771925931;
+TransZ = 531.771925931;
 
 % The rotation angles (same as in RS)
 theta = -30; 
-gamma = 150; % 180 minus angle of the ramp
+gamma = 160; % 180 minus angle of the ramp
 tau = 0; 
 
 %Open file
@@ -104,21 +100,26 @@ newXYZcord = newXYZcord(1:end, 1:3);
 % Interpolate time
 timei = time(1):1:time(end);
 
+timeu = unique(time);
+
+
 % Interpolate disc XYZ-cord
-newXYZcordi = interp1(time,newXYZcord,timei,'pchip');
+newXYZcordi = interp1(timeu,newXYZcord(1:end-(length(time)-length(timeu)),:)...
+    ,timei,'pchip');
 
 % Interpolate robot XYZ-cord
-robotXYZi = interp1(time,robotXYZ,timei,'pchip');
+robotXYZi = interp1(timeu,robotXYZ(1:end-(length(time)-length(timeu)),:)...
+    ,timei,'pchip');
 
 % Smooth discs position data
-newXYZcordi(1:end,1) = smooth(newXYZcordi(1:end,1), 500, 'loess');
-newXYZcordi(1:end,2) = smooth(newXYZcordi(1:end,2), 500, 'loess');
-newXYZcordi(1:end,3) = smooth(newXYZcordi(1:end,3), 500, 'loess');
+newXYZcordi(1:end,1) = smooth(newXYZcordi(1:end,1), 10, 'loess');
+newXYZcordi(1:end,2) = smooth(newXYZcordi(1:end,2), 10, 'loess');
+newXYZcordi(1:end,3) = smooth(newXYZcordi(1:end,3), 10, 'loess');
 
 % Smooth robot position data
-robotXYZi(1:end,1) = smooth(robotXYZi(1:end,1), 500, 'loess');
-robotXYZi(1:end,2) = smooth(robotXYZi(1:end,2), 500, 'loess');
-robotXYZi(1:end,3) = smooth(robotXYZi(1:end,3), 500, 'loess');
+robotXYZi(1:end,1) = smooth(robotXYZi(1:end,1), 10, 'loess');
+robotXYZi(1:end,2) = smooth(robotXYZi(1:end,2), 10, 'loess');
+robotXYZi(1:end,3) = smooth(robotXYZi(1:end,3), 10, 'loess');
 
 % Find mean distance for the disc
 for i = 1: 1 : size(newXYZcordi,1)
@@ -270,8 +271,8 @@ end
     
     %% Plot mean acceleration
     if plotMeanAcceleration == 1
-        meanAccelDisc = diff(meanVelDisc);
-        meanAccelRob = diff(meanVelRob);
+        meanAccelDisc = sqrt((acelX).^2 + (acelY).^2 + (acelZ).^2);
+        meanAccelRob = sqrt((acelRX).^2 + (acelRY).^2 + (acelRZ).^2);
         
         figure6 = figure;
         plot(timei(plotFrom:end-2), meanAccelDisc(plotFrom:end),...
