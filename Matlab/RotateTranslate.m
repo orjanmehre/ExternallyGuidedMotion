@@ -2,6 +2,11 @@
 %{ 
 This script is used to transform the position data of the disk from the 
 workobjects coordinate system to the robot base cord.system. 
+Input for this script is position data in a tab seperated txt-file.
+The order of the data in the txt-file should be: 
+Time X-Disc Y-Disc Z-Disc X-Robot Y-Robot Z-Robot, seperated by tab. 
+This script outputs plots of the position, velocity and accelereation of 
+the disc and robot. 
 %}
 
 %%
@@ -27,11 +32,11 @@ plotFrom = 1;
 % x, y and z coordinates for origo in the new cord.system.
 TransX = 83.663994925;
 TransY = -716.879172118;
-TransZ = 531.771925931;
+TransZ = 731.771925931;
 
 % The rotation angles (same as in RS)
 theta = -30; 
-gamma = 160; % 180 minus angle of the ramp
+gamma = 150; % 180 minus angle of the ramp
 tau = 0; 
 
 %Open file
@@ -112,27 +117,29 @@ robotXYZi = interp1(timeu,robotXYZ(1:end-(length(time)-length(timeu)),:)...
     ,timei,'pchip');
 
 % Smooth discs position data
-newXYZcordi(1:end,1) = smooth(newXYZcordi(1:end,1), 10, 'loess');
-newXYZcordi(1:end,2) = smooth(newXYZcordi(1:end,2), 10, 'loess');
-newXYZcordi(1:end,3) = smooth(newXYZcordi(1:end,3), 10, 'loess');
+for i = 1: 1: 3
+    newXYZcordi(1:end,i) = smooth(newXYZcordi(1:end,i),500,'loess');
+end
 
 % Smooth robot position data
-robotXYZi(1:end,1) = smooth(robotXYZi(1:end,1), 10, 'loess');
-robotXYZi(1:end,2) = smooth(robotXYZi(1:end,2), 10, 'loess');
-robotXYZi(1:end,3) = smooth(robotXYZi(1:end,3), 10, 'loess');
+for i = 1: 1: 3
+    robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),500,'loess');
+end
+
 
 % Find mean distance for the disc
 for i = 1: 1 : size(newXYZcordi,1)
-        meanPosDisc(i,1) = sqrt((newXYZcordi(i,1)).^2 + ...
-            (newXYZcordi(i,2)).^2 + (newXYZcordi(i,3)).^2);
+        distanceDisc(i,1)= sqrt((newXYZcordi(1,1) - newXYZcordi(i,1)).^2 ...
+        + (newXYZcordi(1,2) - newXYZcordi(i,2)).^2 ...
+        + (newXYZcordi(1,3) - newXYZcordi(i,3)).^2);
 end
 
 % Find mean distance for the robot
 for i = 1: 1 : size(robotXYZi,1)
-        meanPosRob(i,1) = sqrt((robotXYZi(i,1)).^2 + ...
-            (robotXYZi(i,2)).^2 + (robotXYZi(i,3)).^2);       
+        distanceRob(i,1) = sqrt((robotXYZi(1,1) - robotXYZi(i,1)).^2 + ...
+            (robotXYZi(1,2) - robotXYZi(i,2)).^2 ...
+            + (robotXYZi(1,3) - robotXYZi(i,3)).^2);       
 end
-
 
 %% Plot position in XYZ
 if plotPosition == 1
@@ -166,16 +173,16 @@ end
 %% Plot mean position
 if plotMeanPos == 1
     figure2 = figure;
-    plot(timei(plotFrom:end),meanPosDisc(plotFrom:end),'r',...
-        timei(plotFrom:end), meanPosRob(plotFrom:end),'b');
+    plot(timei(plotFrom:end),distanceDisc(plotFrom:end),'r',...
+        timei(plotFrom:end), distanceRob(plotFrom:end),'b');
     grid on;
-    legend('Mean position disc', 'Mean position robot','Location',...
+    legend('Distance disc', 'Distance robot','Location',...
         'northoutside','Orientation','horizontal');
     xlabel('Time [ms]')
     ylabel('Position [mm]')
-    filename = ['Plot/meanPosition',name,'.eps'];
+    filename = ['Plot/distance',name,'.eps'];
     saveas(figure2, filename);
-    filenamejpg = ['Plot/meanPositionJPG',name,'.jpg'];
+    filenamejpg = ['Plot/distanceJPG',name,'.jpg'];
     saveas(figure2, filenamejpg);
 end
 
@@ -224,6 +231,7 @@ end
     if plotMeanVelocity == 1
         meanVelDisc = sqrt((velX).^2+(velY).^2+(velZ).^2);
         meanVelRob = sqrt((velRX).^2+(velRY).^2+(velRZ).^2);
+
         
         figure4 = figure;
         plot(timei(plotFrom:end-1), meanVelDisc(plotFrom:end),...
@@ -273,6 +281,7 @@ end
     if plotMeanAcceleration == 1
         meanAccelDisc = sqrt((acelX).^2 + (acelY).^2 + (acelZ).^2);
         meanAccelRob = sqrt((acelRX).^2 + (acelRY).^2 + (acelRZ).^2);
+
         
         figure6 = figure;
         plot(timei(plotFrom:end-2), meanAccelDisc(plotFrom:end),...
