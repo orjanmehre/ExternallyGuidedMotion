@@ -32,11 +32,11 @@ plotFrom = 1;
 % x, y and z coordinates for origo in the new cord.system.
 TransX = 83.663994925;
 TransY = -716.879172118;
-TransZ = 731.771925931;
+TransZ = 531.771925931;
 
 % The rotation angles (same as in RS)
 theta = -30; 
-gamma = 135; % 180 minus angle of the ramp
+gamma = 130; % 180 minus angle of the ramp
 tau = 0; 
 
 %Open file
@@ -124,11 +124,6 @@ end
 % Smooth robot position data
 for i = 1: 1: 3
     robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),100,'loess');
-end
-
-
-for i = 1: 1: size(newXYZcordi,1)
-    PositionX(i) = (newXYZcordi(1,1)- newXYZcordi(i,1)).^2;
 end
 
 
@@ -237,8 +232,7 @@ end
 %         meanVelDisc = sqrt((velX).^2+(velY).^2+(velZ).^2);
 %         meanVelRob = sqrt((velRX).^2+(velRY).^2+(velRZ).^2);
 
-meanVelDisc = diff(distanceDisc);
-meanVelRob = diff(distanceRob);
+meanVelDisc = 
 
         
         figure4 = figure;
@@ -287,11 +281,8 @@ meanVelRob = diff(distanceRob);
     
     %% Plot mean acceleration
     if plotMeanAcceleration == 1
-%         meanAccelDisc = sqrt((acelX).^2 + (acelY).^2 + (acelZ).^2);
-%         meanAccelRob = sqrt((acelRX).^2 + (acelRY).^2 + (acelRZ).^2);
-
-         meanAccelDisc = diff(meanVelDisc); 
-         meanAccelRob = diff(meanVelRob);
+        meanAccelDisc = sqrt((acelX).^2 + (acelY).^2 + (acelZ).^2);
+        meanAccelRob = sqrt((acelRX).^2 + (acelRY).^2 + (acelRZ).^2);
 
         
         figure6 = figure;

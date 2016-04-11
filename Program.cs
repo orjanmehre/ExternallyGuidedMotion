@@ -166,7 +166,7 @@ namespace ExternalGuidedMotion
             }
         }
 
-        public void SimDiscSetPos(Object source, ElapsedEventArgs e)
+        public void SimDiscSetPos()
         {
             _time = _stopwatch.ElapsedMilliseconds;
             if (_position.X < 1000)
@@ -190,17 +190,11 @@ namespace ExternalGuidedMotion
             _seqNum = _camera.Seqnum;
         }
 
-        public void SetTimerInterval()
-        {
-            _newPosIntervalTimer = new System.Timers.Timer(_newPosInterval);
-            _newPosIntervalTimer.Elapsed += SimDiscSetPos;
-            _newPosIntervalTimer.Start();
-        }
 
 
         public void SavePositionToFile()
         {
-            _time = _stopwatch.ElapsedMilliseconds;
+            //_time = _stopwatch.ElapsedMilliseconds;
             Positionfile.WriteLine(_time.ToString("0.00") + " " +
                         Convert.ToInt32(X).ToString("0.00") + " " +
                         Convert.ToInt32(Y).ToString("0.00") + " " +
@@ -233,24 +227,27 @@ namespace ExternalGuidedMotion
             var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
             _stopwatch.Start();
 
-            if (_isSimulate)
-            {
-                SetTimerInterval();
-            }
+           // if (_isSimulate)
+           // {
+            //    SetTimerInterval();
+           // }
            
             
             while (ExitThread == false)
             {
                 // Write the postition to file
-                if (_seqNum > _prevSeqNum)
-                {
-                    SavePositionToFile();
-                    _prevSeqNum = _seqNum;
-                }
+                //if (_seqNum > _prevSeqNum)
+               // {
+//SavePositionToFile();
+                //    _prevSeqNum = _seqNum;
+              //  }
                     
 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
+                SimDiscSetPos();
+                SavePositionToFile();
+
 
                 if (data != null)
                 {
