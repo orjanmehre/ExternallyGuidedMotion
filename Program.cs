@@ -9,52 +9,6 @@ using System.Timers;
 using System.Threading.Tasks;
 
 
-//////////////////////////////////////////////////////////////////////////
-// Sample program using protobuf-csharp-port 
-// (http://code.google.com/p/protobuf-csharp-port/wiki/GettingStarted)
-//
-// 1) Download protobuf-csharp binaries from https://code.google.com/p/protobuf-csharp-port/
-// 2) Unpack the zip file
-// 3) Copy the egm.proto file to a sub catalogue where protobuf-csharp was un-zipped, e.g. ~\protobuf-csharp\tools\egm
-// 4) Generate an egm C# file from the egm.proto file by typing in a windows console: protogen .\egm\egm.proto --proto_SimDisc=.\egm
-// 5) Create a C# console application in Visual Studio
-// 6) Install Nuget, in Visual Studio, click Tools and then Extension Manager. Goto to Online, find the NuGet Package Manager extension and click Download.
-// 7) Install protobuf-csharp via NuGet, select in Visual Studio, Tools Nuget Package Manager and then Package Manager Console and type PM>Install-Package Google.ProtocolBuffers
-// 8) Add the generated file egm.cs to the Visual Studio project (add existing item)
-// 9) Copy the code below and then compile, link and run.
-//
-// Copyright (c) 2014, ABB
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with
-// or without modification, are permitted provided that 
-// the following conditions are met:
-//
-//    * Redistributions of source code must retain the 
-//      above copyright notice, this list of conditions 
-//      and the following disclaimer.
-//    * Redistributions in binary form must reproduce the 
-//      above copyright notice, this list of conditions 
-//      and the following disclaimer in the documentation 
-//      and/or other materials provided with the 
-//      distribution.
-//    * Neither the name of ABB nor the names of its 
-//      contributors may be used to endorse or promote 
-//      products derived from this software without 
-//      specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF 
-// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-
 namespace ExternalGuidedMotion
 {
     public static class Settings
@@ -185,7 +139,7 @@ namespace ExternalGuidedMotion
         public void CameraSetPos()
         {
             X = _camera.X;
-            Y = _camera.Y;
+            Y = - _camera.Y;
             Z = 0;
             _seqNum = _camera.Seqnum;
         }
@@ -194,7 +148,7 @@ namespace ExternalGuidedMotion
 
         public void SavePositionToFile()
         {
-            //_time = _stopwatch.ElapsedMilliseconds;
+            _time = _stopwatch.ElapsedMilliseconds;
             Positionfile.WriteLine(_time.ToString("0.00") + " " +
                         Convert.ToInt32(X).ToString("0.00") + " " +
                         Convert.ToInt32(Y).ToString("0.00") + " " +
@@ -226,28 +180,23 @@ namespace ExternalGuidedMotion
             _udpServer = new UdpClient(Program.IpPortNumber);
             var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
             _stopwatch.Start();
-
-           // if (_isSimulate)
-           // {
-            //    SetTimerInterval();
-           // }
            
             
             while (ExitThread == false)
             {
-                // Write the postition to file
-                //if (_seqNum > _prevSeqNum)
-               // {
-//SavePositionToFile();
-                //    _prevSeqNum = _seqNum;
-              //  }
-                    
+
+               //Write the postition to file
+               if (_seqNum > _prevSeqNum)
+               {
+                    SavePositionToFile();
+                    _prevSeqNum = _seqNum;
+               }
+
+
+                //SimDiscSetPos();
 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
-                SimDiscSetPos();
-                SavePositionToFile();
-
 
                 if (data != null)
                 {

@@ -154,3 +154,5 @@ C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\obj\Debug\ExternalGuidedM
 C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csprojResolveAssemblyReference.cache
 C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.exe
 C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.pdb
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\bin\Debug\MathNet.Numerics.dll
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\bin\Debug\MathNet.Numerics.xml

@@ -30,13 +30,13 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
-TransX = 83.663994925;
-TransY = -716.879172118;
-TransZ = 731.771925931;
+TransX = 91;
+TransY = -732;
+TransZ = 666;
 
 % The rotation angles (same as in RS)
 theta = -30; 
-gamma = 135; % 180 minus angle of the ramp
+gamma = 150; % 180 minus angle of the ramp
 tau = 0; 
 
 %Open file
