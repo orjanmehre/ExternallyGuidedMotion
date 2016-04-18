@@ -21,15 +21,6 @@ C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.Pr
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Google.ProtocolBuffers.Serialization.xml
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.exe
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.pdb
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.Extensions.Desktop.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.Extensions.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Net.Http.Extensions.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Net.Http.Primitives.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.Core.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.Interfaces.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.Linq.dll
-C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.PlatformServices.dll
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.xml
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.Extensions.xml
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.Extensions.Desktop.xml
