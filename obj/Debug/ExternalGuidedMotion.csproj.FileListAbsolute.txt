@@ -147,3 +147,14 @@ C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\obj\Debug\ExternalGuidedM
 C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.pdb
 C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\bin\Debug\MathNet.Numerics.dll
 C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\bin\Debug\MathNet.Numerics.xml
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\MathNet.Numerics.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.Extensions.Desktop.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\Microsoft.Threading.Tasks.Extensions.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Net.Http.Extensions.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Net.Http.Primitives.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.Core.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.Interfaces.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.Linq.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\System.Reactive.PlatformServices.dll
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\bin\Debug\MathNet.Numerics.xml

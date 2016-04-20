@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 
+
 /// <summary>
 /// This class is used to rotate and tanslate a coordinate system to another coordinate system
 /// 
@@ -13,7 +14,7 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace ExternalGuidedMotion
 {
-    class RotateTranslate
+    public class RotateTranslate
     {
         private Camera _camera;
         private double _transX = 91;
@@ -22,14 +23,18 @@ namespace ExternalGuidedMotion
         private double _theta = -30;
         private double _gamma = 150;
         private double _tau = 0;
+        public Vector<double> newXYCord = Vector<double>.Build.Dense(4);
 
-          
-       
+        public double X;
+        public double Y;
+        public double Z;
 
 
-        public RotateTranslate(Camera _camera)
+        public RotateTranslate(double X, double Y, double Z)
         {
-            this._camera = _camera;
+            this.X = X;
+            this.Y = Y;
+            this.Z = Z; 
         }
 
         private Matrix<double> RotateZ()
@@ -63,7 +68,6 @@ namespace ExternalGuidedMotion
             {0, Math.Sin(_tau), Math.Cos(_tau), 0},
             {0, 0, 0, 1} });
             return _rotX;
-
         }
 
         private Matrix<double> TranslationMatrix()
@@ -77,9 +81,24 @@ namespace ExternalGuidedMotion
             return _trans;
         }
 
-        private void RotateZYX()
+        private Matrix<double> RotateZYX()
         {
             Matrix<double> _rotZYX = (RotateZ())*(-RotateY())*(RotateX());
+            return _rotZYX;
+        }
+
+        private Matrix<double> TransformationMatrix()
+        {
+            Matrix<double> _transform = (TranslationMatrix() * RotateZYX());
+            return _transform;
+        }
+
+        public Vector<double> RotatedTranslatedCord()
+        {
+            var _cameraXY = Vector<double>.Build.Dense(new[] {X, Y, 0, 1 });
+
+            newXYCord = TransformationMatrix()*_cameraXY;
+            return newXYCord;
         }
 
     }
