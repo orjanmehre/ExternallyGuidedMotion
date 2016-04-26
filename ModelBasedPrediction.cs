@@ -19,7 +19,13 @@ namespace ExternalGuidedMotion
         private double _accel;
         private double _vel;
 
-        public double _dist { get; set; }
+        public double Dist
+        {
+            get
+            {
+                return (0.5)*(Velocity()*_time);
+            }
+        }
 
 
         public ModelBasedPrediction(double _angel, double _g, double _time, double _friction)
@@ -28,7 +34,6 @@ namespace ExternalGuidedMotion
             this._g = _g;
             this._time = _time;
             this._friction = _friction;
-            Distance();
         }
 
         public double Acceleration()
@@ -44,12 +49,5 @@ namespace ExternalGuidedMotion
 
             return _vel;
         }
-
-        public void Distance()
-        {
-            _dist = (1/2)*(Velocity()*_time);
-        }
-
-
     }
 }
