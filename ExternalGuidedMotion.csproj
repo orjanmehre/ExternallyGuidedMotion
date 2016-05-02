@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="LinearPredictor.cs" />
     <Compile Include="ModelBasedPrediction.cs" />
     <Compile Include="RotateTranslate.cs" />
     <Compile Include="Position.cs" />

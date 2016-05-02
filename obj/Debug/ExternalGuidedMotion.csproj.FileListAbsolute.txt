@@ -155,3 +155,4 @@ C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalG
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csproj.ResolveComReference.cache
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.exe
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.pdb
+C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\obj\Debug\ExternalGuidedMotion.csprojResolveAssemblyReference.cache

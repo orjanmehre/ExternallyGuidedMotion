@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 /// <summary>
 /// Finds the 1D distace of a object sliding down a ramp. 
 /// Input parameters are angle of the ramp, gravity, time and the coefficient of kinetic friction. 
@@ -15,7 +14,6 @@ namespace ExternalGuidedMotion
         private double _angel;
         private double _time;
         private double _friction;
-
         private double _accel;
         private double _vel;
 
