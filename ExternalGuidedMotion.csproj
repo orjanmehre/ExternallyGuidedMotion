@@ -49,10 +49,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.ProtocolBuffers">
-      <HintPath>..\..\..\..\..\EGM\EgmTestApp\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.dll</HintPath>
+      <HintPath>\\Mac\Dropbox\ELE630 - EGM prosjekt\Program\C# Kinect\bin\Debug\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
     <Reference Include="Google.ProtocolBuffers.Serialization">
-      <HintPath>..\..\..\..\..\EGM\EgmTestApp\packages\Google.ProtocolBuffers.2.4.1.555\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
+      <HintPath>\\Mac\Dropbox\ELE630 - EGM prosjekt\Program\C# Kinect\bin\Debug\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=3.11.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MathNet.Numerics.3.11.0\lib\net40\MathNet.Numerics.dll</HintPath>
