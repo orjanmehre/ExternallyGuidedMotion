@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace ExternalGuidedMotion
 {
-    class LinearPredictor
+    public class LinearPredictor
     {
-        private double[] _a = new double[4] {0, 0, 0, 0};
-        private double[] _predictorCoefficients = new double[] { 0 };
-        private double[] _x = new double[4] {0, 0, 0, 0};
-        private double[] _prevReadings = new double[] { 0 };
+        private double[] _a;
+        private double[] _predictorCoefficients;
+        private double[] _x;
+        private double[] _prevReadings;
 
         private double _ai;
         private double _error;
@@ -33,8 +33,18 @@ namespace ExternalGuidedMotion
                 return _a.ElementAt(4) * _x.ElementAt(4) +
                        _a.ElementAt(3) * _x.ElementAt(3) +
                        _a.ElementAt(2) * _x.ElementAt(2) +
-                       _a.ElementAt(1) * _x.ElementAt(1);
+                       _a.ElementAt(1) * _x.ElementAt(1) +
+                       _a.ElementAt(0) * _x.ElementAt(0);
             }
+        }
+
+        public LinearPredictor()
+        {
+            _arrayPointer = 0;
+            _a = new double[4] { 0, 0, 0, 0 };
+            _x = new double[4] { 0, 0, 0, 0 };
+            _predictorCoefficients = new double[] { 0 };
+            _prevReadings = new double[] { 0 };
         }
 
         public void UpdateEstimate(double currentPosition)
