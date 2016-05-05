@@ -60,9 +60,10 @@
     <Compile Include="RotateTranslateTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestOfModel.cs" />
+    <Compile Include="LinearPredictionTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ExternalGuidedMotion\ExternalGuidedMotion.csproj">
+    <ProjectReference Include="..\..\src\ExternalGuidedMotion.csproj">
       <Project>{670336b1-d70f-4647-9e49-57b6c1214c04}</Project>
       <Name>ExternalGuidedMotion</Name>
     </ProjectReference>
