@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ProductSettings version="1.0">
+  <Products>
+    <Product name="RobotWare" version="6.01.1010" id="abb.robotics.robotware">
+      <Settings>
+        <Setting id="abb.robotics.robotware.base" displayName="RobotWare Base" robot="1" />
+        <Setting id="abb.robotics.robotware.options.devicenet.mssingle" displayName="709-1 DeviceNet Master/Slave" robot="1" />
+        <Setting id="abb.robotics.robotware.options.conveyortracking" displayName="606-1 Conveyor Tracking" robot="1" />
+        <Setting id="abb.robotics.robotware.options.devicenet.fieldbusadapter" displayName="840-4 DeviceNet Anybus Slave" robot="1" />
+        <Setting id="abb.robotics.robotware.options.externallyguidedmotion" displayName="689-1 Externally Guided Motion" robot="1" />
+        <Setting id="abb.robotics.robotware.options.pcinterface" displayName="616-1 PC Interface" robot="1" />
+        <Setting id="abb.robotics.robotware.languages.english" displayName="English" robot="1" />
+        <Setting id="abb.robotics.robotware.drivesystems.drive.dc430a2.du430a2.dm430a" displayName="Drive System IRB 120/140/260/360/1200/1400/1520/1600" robot="1" />
+        <Setting id="abb.robotics.robotware.robots.irb140.6-0_8" displayName="IRB 140-6/0.8" robot="1" />
+      </Settings>
+    </Product>
+  </Products>
+</ProductSettings>
