@@ -40,9 +40,9 @@ namespace ExternalGuidedMotion
 
         public LinearPredictor()
         {
-            _arrayPointer = 0;
-            _a = new double[5] { 0, 0, 0, 0, 0 };
-            _x = new double[5] { 0, 0, 0, 0, 0 };
+            _arrayPointer = 1;
+            _a = new double[5] { 0, 1, 0, 0, 0 };
+            _x = new double[5] { 320, 320, 0, 0, 0 };
             _predictorCoefficients = new double[30000];
             Array.Clear(_predictorCoefficients, 0, 30000);
             _prevReadings = new double[30000];
@@ -52,7 +52,7 @@ namespace ExternalGuidedMotion
         public void UpdateEstimate(double currentPosition)
         {
             this._currentPosition = currentPosition;
-            UpdateError(EstimatedPosition, currentPosition);
+            UpdateError(currentPosition, EstimatedPosition);
             PrevReadings(currentPosition);
             _newCoeff = CalculatePredictorCoefficients();
             PredictorCoefficients(_newCoeff);
@@ -64,7 +64,7 @@ namespace ExternalGuidedMotion
             _predictorCoefficients[_arrayPointer] = a;
             _k = 0;
 
-            for (_i = _arrayPointer; _i > _arrayPointer - 4 && _i > 0; _i--)
+            for (_i = _arrayPointer; _i > _arrayPointer - 5 && _i > 0; _i--)
             {
                 _a[_k] = _predictorCoefficients[_i];
                 _k++;
@@ -77,7 +77,7 @@ namespace ExternalGuidedMotion
             _prevReadings[_arrayPointer] = currentPosition;
             _k = 0; 
 
-            for (_i = _arrayPointer; _i > _arrayPointer - 4 && _i > 0; _i--)
+            for (_i = _arrayPointer; _i > _arrayPointer - 5 && _i > 0; _i--)
             {
                 _x[_k] = _prevReadings[_i];
                 _k++;
@@ -86,8 +86,8 @@ namespace ExternalGuidedMotion
     
         private double CalculatePredictorCoefficients()
         {
-            _ai = -(((_x.ElementAt(4) * _a.ElementAt(4)) + (_x.ElementAt(3) * _a.ElementAt(3)) + 
-                (_x.ElementAt(2) * _a.ElementAt(2)) + (_x.ElementAt(1) * _a.ElementAt(1))) /_x.ElementAt(0))  - _error;
+            _ai = ((-(_x.ElementAt(4) * _a.ElementAt(4)) - (_x.ElementAt(3) * _a.ElementAt(3)) - 
+                (_x.ElementAt(2) * _a.ElementAt(2)) - (_x.ElementAt(1) * _a.ElementAt(1)) -_error) /_x.ElementAt(0));
             return _ai;
         }
 
@@ -96,7 +96,7 @@ namespace ExternalGuidedMotion
             _arrayPointer = _arrayPointer + 1; 
         }
 
-        private void UpdateError(double prevEstimate, double currentPosition)
+        private void UpdateError(double currentPosition, double prevEstimate)
         {
             _error = currentPosition - prevEstimate;
         }

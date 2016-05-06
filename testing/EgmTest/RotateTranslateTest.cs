@@ -18,6 +18,8 @@ namespace EgmTest
             double X = 0;
             double Y = 0;
             double Z = 0;
+            double coordinateAndreas = 9001;
+            bool translateNotCorrect = true;
 
             RotateTranslate FromWobjToBase = new RotateTranslate(X,Y,Z);
             newCord = FromWobjToBase.RotatedTranslatedCord();
