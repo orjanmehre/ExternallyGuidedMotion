@@ -81,6 +81,7 @@ namespace EgmTest
             Debug.WriteLine("ArrayPointer: " + linearPredictor._arrayPointer.ToString());
             Debug.WriteLine("PredCoeff: " + "[{0}]", string.Join(", ", linearPredictor._a));
             Debug.WriteLine("PrevRead : " + "[{0}]", string.Join(", ", linearPredictor._x));
+            Debug.WriteLine("");
 
             linearPredictor.UpdateEstimate(p7);
             Debug.WriteLine("EstimatedPos. " + linearPredictor.EstimatedPosition.ToString());
