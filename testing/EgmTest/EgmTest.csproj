@@ -57,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="PredictorTest.cs" />
     <Compile Include="RotateTranslateTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestOfModel.cs" />

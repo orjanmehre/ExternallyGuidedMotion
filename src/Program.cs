@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using abb.egm;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.Threading;
 using System.Timers;
 using System.Threading.Tasks;
@@ -69,6 +70,7 @@ namespace ExternalGuidedMotion
         private uint _seqNumber = 0;
         private Settings.Mode mode;
         private Camera _camera;
+        private Predictor _predictor;
         private Position _position;
         private Stopwatch _stopwatch;
         private SimDisc _SimDisc;
@@ -99,7 +101,8 @@ namespace ExternalGuidedMotion
             switch (mode)
             {
                 case Settings.Mode.Camera:
-                    _camera = new Camera();
+                    _predictor = new Predictor();
+                    _camera = new Camera(_predictor);
                     _camera.StartCamera();
                     _stopwatch = new Stopwatch();
                     _isCamera = true; 
@@ -138,7 +141,7 @@ namespace ExternalGuidedMotion
 
         public void CameraSetPos()
         {
-            X = _camera.X;
+            X = _predictor.PredictedPosition;
             Y = - _camera.Y;
             Z = 0;
             _seqNum = _camera.Seqnum;

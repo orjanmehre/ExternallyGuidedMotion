@@ -18,6 +18,7 @@ namespace ExternalGuidedMotion
     {
         private Thread _cameraThread = null;
         private UdpClient _cameraUdpServer = null;
+        private Predictor predictor;
 
         public bool exitThread = false;
         public TextWriter ExecutionTime = new StreamWriter(@"..\...\ExecutionTime.txt", true);
@@ -30,6 +31,10 @@ namespace ExternalGuidedMotion
         public double Seqnum { get; set; }
 
 
+        public Camera(Predictor predictor)
+        {
+            this.predictor = predictor;
+        }
 
 
         public void WriteExecutionTimeToFile()
@@ -69,6 +74,8 @@ namespace ExternalGuidedMotion
                     Y = Convert.ToDouble(tempY);
                     TimeStamp = Convert.ToDouble(tempT);
                     Seqnum = Convert.ToInt32(tempS);
+
+                    predictor.NewPrediction(TimeStamp,X);
 
                     timeElapsed = stopwatch.ElapsedMilliseconds;
                     stopwatch.Stop();
