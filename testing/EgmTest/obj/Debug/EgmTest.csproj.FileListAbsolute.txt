@@ -16,3 +16,12 @@ C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\testing\EgmTest\bin
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\testing\EgmTest\obj\Debug\EgmTest.csprojResolveAssemblyReference.cache
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\testing\EgmTest\obj\Debug\EgmTest.dll
 C:\Users\Isi-Konsulent\Documents\GitHub\ExternalGuidedMotion\testing\EgmTest\obj\Debug\EgmTest.pdb
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\bin\Debug\EgmTest.dll
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\bin\Debug\EgmTest.pdb
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\bin\Debug\ExternalGuidedMotion.exe
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\bin\Debug\Google.ProtocolBuffers.dll
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\bin\Debug\ExternalGuidedMotion.pdb
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\bin\Debug\Google.ProtocolBuffers.xml
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\obj\Debug\EgmTest.csprojResolveAssemblyReference.cache
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\obj\Debug\EgmTest.dll
+C:\Users\Robot\Documents\ABBOrjan\ExternalGuidedMotion\testing\EgmTest\obj\Debug\EgmTest.pdb

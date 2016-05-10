@@ -30,8 +30,8 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
-TransX = 91;
-TransY = -732;
+TransX = 178;
+TransY = -632;
 TransZ = 666;
 
 % The rotation angles (same as in RS)

@@ -17,20 +17,23 @@ namespace ExternalGuidedMotion
         private double _a;
         private double _prevTime;
         private double _currentTime;
+        private double _error; 
 
         public double PredictedPosition { get; set; }
        
         public Predictor()
         {
-            _prevPosition = 313;
-            _prevTime = 4;
-            _prevVelocity = 1.75;
+            _prevPosition = 0;
+            _prevTime = 0;
+            _prevVelocity = 0;
+            _error = 0; 
         }
 
         public void NewPrediction(double time, double position)
         {
             this._currentTime = time;
-            this._currentPosition = position; 
+            this._currentPosition = position;
+            setError();
             predictedPosition();
             _a = acceleration();
             setPrevPosition();
@@ -65,7 +68,12 @@ namespace ExternalGuidedMotion
 
         private void predictedPosition()
         {
-            PredictedPosition = _currentPosition + velocity()*_currentTime;
+            PredictedPosition = _currentPosition + velocity()*_currentTime + _error;
+        }
+
+        private void setError()
+        {
+            _error = _currentPosition - PredictedPosition;
         }
     }
 }
