@@ -14,10 +14,10 @@ namespace ExternalGuidedMotion
         private double _currentPosition; 
         private double _prevVelocity;
         private double _currentVelocity;
-        private double _a;
+        public double _a { get; set; }
         private double _prevTime;
         private double _currentTime;
-        private double _error; 
+        public double _error { get; set; }
 
         public double PredictedPosition { get; set; }
        
@@ -26,7 +26,7 @@ namespace ExternalGuidedMotion
             _prevPosition = 0;
             _prevTime = 0;
             _prevVelocity = 0;
-            _error = 0; 
+            _error = 0;
         }
 
         public void NewPrediction(double time, double position)
@@ -69,11 +69,18 @@ namespace ExternalGuidedMotion
         private void predictedPosition()
         {
             PredictedPosition = _currentPosition + velocity()*_currentTime + _error;
+            
         }
 
         private void setError()
         {
             _error = _currentPosition - PredictedPosition;
+
+            if (_error < 0 || _error > 100)
+            {
+                _error = 0;
+                Console.WriteLine("Error has an unnatural value");
+            }
         }
     }
 }
