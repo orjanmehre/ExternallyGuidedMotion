@@ -52,7 +52,7 @@ namespace ExternalGuidedMotion
 
         public void WriteExecutionTimeToFile()
         {
-            ExecutionTime.WriteLine(_currentPosition.ToString() + " " +  _prevPosition.ToString() + " " + _currentTime.ToString());
+            ExecutionTime.WriteLine(_currentPosition.ToString() + " " + PredictedPosition.ToString() + " " + _currentVelocity.ToString() +   " " + _regCoeff.ToString());
         }
 
         private void setPrevPosition()
@@ -85,7 +85,7 @@ namespace ExternalGuidedMotion
 
         private void predictedPosition()
         {
-            PredictedPosition = _currentPosition + _regCoeff*velocity()*_currentTime;
+            PredictedPosition = _currentPosition + velocity()*_currentTime;
             
         }
 
@@ -102,8 +102,12 @@ namespace ExternalGuidedMotion
 
         private void regressionCoeffisient()
         {
-            _regCoeff = Math.Abs(_currentVelocity / _prevVelocity);
-            Debug.WriteLine("RegCoeff: " + _regCoeff.ToString());
+            _regCoeff = Math.Abs(_currentVelocity / _prevPrevPrevPrevVelocity);
+            
+            if(_regCoeff < 0.5 || _regCoeff > 5 || _regCoeff == double.NaN)
+            {
+                _regCoeff = 1;
+            }                     
         }
     }
 }
