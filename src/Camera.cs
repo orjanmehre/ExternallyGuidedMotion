@@ -70,10 +70,10 @@ namespace ExternalGuidedMotion
                     string tempT = XYTS[2].Replace('.', ',');
                     string tempS = XYTS[3].Replace('.', ',');
 
-                    X = Int32.Parse(tempX);
-                    Y = Int32.Parse(tempY);
-                    TimeStamp = Int32.Parse(tempT);
-                    Seqnum = Int32.Parse(tempS);
+                    X = Convert.ToDouble(tempX);
+                    Y = Convert.ToDouble(tempY);
+                    TimeStamp = Convert.ToDouble(tempT);
+                    Seqnum = Convert.ToDouble(tempS);
 
                     predictor.NewPrediction(TimeStamp,X);
 

@@ -25,8 +25,6 @@ namespace EgmTest
             {
                 predictor.NewPrediction(time[i], postion[i]);
                 Debug.WriteLine("Pos: "  + predictor.PredictedPosition.ToString());
-                Debug.WriteLine("Accel: " + predictor._a.ToString());
-                Debug.WriteLine("Error: " + predictor._error.ToString());
             }
             
 
