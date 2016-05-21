@@ -20,7 +20,7 @@ namespace ExternalGuidedMotion
         private Position _updatePos;
         private bool _hasDiscStarted; 
 
-        public const double ANGLE = 5;
+        public const double ANGLE = 20;
         public bool ExitThread = false;
 
         public double Position { get; set; }
@@ -42,11 +42,12 @@ namespace ExternalGuidedMotion
             {
                 if (_hasDiscStarted)
                 {
-                    Y = -0.1;
+                    Y = -0.125;
                     Z = 0;
                 }
                 else
                 {
+                    Position = 0;
                     Y = 0;
                     Z = 0; 
                 }
@@ -54,9 +55,9 @@ namespace ExternalGuidedMotion
                 TimeElapsed = _stopwatch.ElapsedMilliseconds / 1000d;
                 double speed = CalculateSpeed(TimeElapsed);
                 Position = CalculatePosition(speed, TimeElapsed);
-                if (Position > 1)
+                if (Position > 0.8)
                 {
-                    Position = 1;
+                    Position = 0.8;
                 }
                 _updatePos.SetPosition(Position, Y, Z, TimeElapsed);
             }

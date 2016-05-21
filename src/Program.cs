@@ -125,7 +125,6 @@ namespace ExternalGuidedMotion
 
         public void SimDiscSetPos()
         {
-            _time = _stopwatch.ElapsedMilliseconds;
             if (_position.X < 1000)
             {
                 X = _position.X;
@@ -196,7 +195,7 @@ namespace ExternalGuidedMotion
                }
 
 
-                //SimDiscSetPos();
+                SimDiscSetPos();
 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
@@ -207,6 +206,7 @@ namespace ExternalGuidedMotion
                     {
                         CameraSetPos();
                     }
+
 
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
@@ -232,6 +232,7 @@ namespace ExternalGuidedMotion
                             Console.WriteLine("Error send to robot");
                         }
                     }
+                    SavePositionToFile();
                 }  
             } 
         }
