@@ -91,6 +91,11 @@ namespace ExternalGuidedMotion
         private double XRobot { get; set; }
         private double YRobot { get; set; }
         private double ZRobot { get; set; }
+
+        private double XSensor;
+        private double YSensor;
+        private double ZSensor;
+
         private double X { get; set; }
         private double Y { get; set; }
         private double Z { get; set; }
@@ -152,9 +157,9 @@ namespace ExternalGuidedMotion
         {
             _time = _stopwatch.ElapsedMilliseconds;
             Positionfile.WriteLine(_time.ToString("0.00") + " " +
-                        Convert.ToInt32(X).ToString("0.00") + " " +
-                        Convert.ToInt32(Y).ToString("0.00") + " " +
-                        Convert.ToInt32(Z).ToString("0.00") + " " +
+                        Convert.ToInt32(XSensor).ToString("0.00") + " " +
+                        Convert.ToInt32(YSensor).ToString("0.00") + " " +
+                        Convert.ToInt32(ZSensor).ToString("0.00") + " " +
                         Convert.ToInt32(XRobot).ToString("0.00") + " " +
                         Convert.ToInt32(YRobot).ToString("0.00") + " " +
                         Convert.ToInt32(ZRobot).ToString("0.00"));
@@ -181,32 +186,21 @@ namespace ExternalGuidedMotion
             // create an udp client and listen on any address and the port IpPortNumber
             _udpServer = new UdpClient(Program.IpPortNumber);
             var remoteEp = new IPEndPoint(IPAddress.Any, Program.IpPortNumber);
+
             _stopwatch.Start();
-           
             
             while (ExitThread == false)
             {
-
-               //Write the postition to file
-               if (_seqNum > _prevSeqNum)
-               {
-                    SavePositionToFile();
-                    _prevSeqNum = _seqNum;
-               }
-
-
-                SimDiscSetPos();
+                
+                //SimDiscSetPos();
+                CameraSetPos();
 
                 // Get the message from robot
                 var data = _udpServer.Receive(ref remoteEp);
 
                 if (data != null)
                 {
-                    if (_isCamera)
-                    {
-                        CameraSetPos();
-                    }
-
+                    Console.WriteLine(_predictor.PredictedPosition.ToString());
 
                     // de-serialize inbound message from robot using Google Protocol Buffer
                     EgmRobot robot = EgmRobot.CreateBuilder().MergeFrom(data).Build();
@@ -218,6 +212,10 @@ namespace ExternalGuidedMotion
                     // create a new outbound sensor message
                     EgmSensor.Builder sensor = EgmSensor.CreateBuilder();
                     CreateSensorMessage(sensor);
+
+                    XSensor = sensor.Planned.Cartesian.Pos.X;
+                    YSensor = sensor.Planned.Cartesian.Pos.Y;
+                    ZSensor = sensor.Planned.Cartesian.Pos.Z;
 
                     using (MemoryStream memoryStream = new MemoryStream())
                     {
@@ -232,6 +230,7 @@ namespace ExternalGuidedMotion
                             Console.WriteLine("Error send to robot");
                         }
                     }
+
                     SavePositionToFile();
                 }  
             } 

@@ -20,6 +20,12 @@ namespace ExternalGuidedMotion
         private UdpClient _cameraUdpServer = null;
         private Predictor predictor;
 
+        private double _x;
+        private double _y;
+        private double _timeStamp;
+        private double _seqNum;
+        private double _prevY;
+
         public bool exitThread = false;
         public TextWriter ExecutionTime = new StreamWriter(@"..\...\ExecutionTime.txt", true);
         Stopwatch stopwatch = new Stopwatch();
@@ -39,7 +45,7 @@ namespace ExternalGuidedMotion
 
         public void WriteExecutionTimeToFile()
         {
-            ExecutionTime.WriteLine(Seqnum.ToString() + " " + timeElapsed.ToString("0.00"));
+            ExecutionTime.WriteLine(X.ToString());
         }
 
         public void CameraThread()
@@ -49,8 +55,6 @@ namespace ExternalGuidedMotion
 
             while (exitThread == false)
             {
-                //Measure the time it takes to get new position data from the camera. 
-                stopwatch.Start(); 
 
                 var cameraData = _cameraUdpServer.Receive(ref cameraRemoteEP);
 
@@ -70,17 +74,28 @@ namespace ExternalGuidedMotion
                     string tempT = XYTS[2].Replace('.', ',');
                     string tempS = XYTS[3].Replace('.', ',');
 
-                    X = Convert.ToDouble(tempX);
-                    Y = Convert.ToDouble(tempY);
-                    TimeStamp = Convert.ToDouble(tempT);
-                    Seqnum = Convert.ToDouble(tempS);
+                    Double.TryParse(tempX, out _x);
+                    Double.TryParse(tempY, out _y);
+                    Double.TryParse(tempT, out _timeStamp);
+                    Double.TryParse(tempS, out _seqNum);
+                    X = _x;
+
+                    Y = _y;
+
+                    if(Math.Abs(Y) > 10* Math.Abs(_y))
+                    {
+                        Y = _y;
+                    }
+                  
+                    
+                    TimeStamp = _timeStamp;
+                    Seqnum = _seqNum;
 
                     predictor.NewPrediction(TimeStamp,X);
 
-                    timeElapsed = stopwatch.ElapsedMilliseconds;
-                    stopwatch.Stop();
+                    timeElapsed = TimeStamp;
                     WriteExecutionTimeToFile();
-                    stopwatch.Reset();
+                    _prevY = Y;
                 }
                 else
                 {
@@ -93,6 +108,7 @@ namespace ExternalGuidedMotion
         {
             _cameraThread = new Thread(new ThreadStart(CameraThread));
             _cameraThread.Start();
+            _prevY = 1;
         }
 
         public void StopCamera()

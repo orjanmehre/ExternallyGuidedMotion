@@ -23,6 +23,7 @@ namespace ExternalGuidedMotion
         private double _g;
         private double _fricKoeff;
         private double _angle;
+        private double sumPrevPositions;
         private int _pk; 
 
 
@@ -39,7 +40,7 @@ namespace ExternalGuidedMotion
             _predictedPositions = new double[6] { 1, 1, 1, 1, 1, 1 };
             _error = 0;
             _regCoeff = 1;
-            _g = 9.81;
+            _g = 0.00981;
             _fricKoeff = 0.5;
             _angle = 20 * (Math.PI / 180);
             _prevPos = 1;
@@ -50,12 +51,14 @@ namespace ExternalGuidedMotion
         {
             _currentTime = time;
             _currentPosition = position;
+            //checkCurrentPosition();
+            setPrevPositions();
+            movingAverage();
             setError();
             velocity();
             regressionCoeffisient();
             _a = acceleration();
             predictedPosition();
-            setPrevPositions();
             setPrevVelocitys();
             setPrevTimes();
             _prevPos = _currentPosition;
@@ -64,9 +67,23 @@ namespace ExternalGuidedMotion
 
         public void WriteExecutionTimeToFile()
         {
-            ExecutionTime.WriteLine("Accel " + _a.ToString() + " Vel " + _currentVelocity.ToString() );
+            ExecutionTime.WriteLine(_currentPosition.ToString());
         }
-        
+
+        private void checkCurrentPosition()
+        {
+            if (Math.Abs(_currentPosition) >  Math.Abs(_prevPos)+100)
+            {
+                _currentPosition = _prevPos;
+            }
+        }
+
+        private void movingAverage()
+        {
+            _currentPosition = sumPrevPositions / _pk;
+        }
+
+
         private void setPrevTimes()
         {
             for(int i = 1; i < _pk; i++)
@@ -85,6 +102,8 @@ namespace ExternalGuidedMotion
             }
 
             _prevPositions[0] = _currentPosition;
+
+            sumPrevPositions = _prevPositions.Sum();
 
         }
 
@@ -108,13 +127,18 @@ namespace ExternalGuidedMotion
 
         private double acceleration()
         {
-            _a = Math.Abs((_g * Math.Sin(_angle)) - (_fricKoeff * _g * Math.Cos(_angle))) * 0.001;
+            _a = -(_g * Math.Sin(_angle)) - (_fricKoeff * _g * Math.Cos(_angle));
             return _a;
         }
 
         private void predictedPosition()
         {
-            PredictedPosition = _currentPosition + _currentVelocity * _currentTime*7 + (1/2)*(_a*Math.Pow(_currentTime*7,2));
+            PredictedPosition = _currentPosition + _currentVelocity * _currentTime*30 + (1/2)*(_a*Math.Pow(_currentTime*30,2));
+
+            if (PredictedPosition > 1150)
+            {
+                PredictedPosition = 1150;
+            }
         }
 
         private void setError()
