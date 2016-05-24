@@ -83,7 +83,11 @@ namespace ExternalGuidedMotion
         private bool _isCamera = false;
         private double _seqNum;
         private double _prevSeqNum;
-        private double _prevX; 
+        private double _prevX;
+        private double _prevXSensor;
+        private double _prevYSensor;
+        private double _prevZSensor;
+        private double _timeAhead;
 
         public bool ExitThread = false;
         public TextWriter Positionfile = new StreamWriter(@"..\...\position.txt", true);
@@ -149,6 +153,7 @@ namespace ExternalGuidedMotion
             Y = - _camera.Y;
             Z = 0;
             _seqNum = _camera.Seqnum;
+            _timeAhead = _predictor.PredictedTime;
         }
 
 
@@ -162,7 +167,9 @@ namespace ExternalGuidedMotion
                         Convert.ToInt32(ZSensor).ToString("0.00") + " " +
                         Convert.ToInt32(XRobot).ToString("0.00") + " " +
                         Convert.ToInt32(YRobot).ToString("0.00") + " " +
-                        Convert.ToInt32(ZRobot).ToString("0.00"));
+                        Convert.ToInt32(ZRobot).ToString("0.00") + " " +
+                        _timeAhead.ToString("0.00")
+                        );
         }
 
         private void StartDiscFromConsole()
@@ -232,6 +239,10 @@ namespace ExternalGuidedMotion
                     }
 
                     SavePositionToFile();
+
+                    _prevXSensor = XSensor;
+                    _prevYSensor = YSensor;
+                    _prevZSensor = ZSensor;
                 }  
             } 
         }
