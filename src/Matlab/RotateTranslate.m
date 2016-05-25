@@ -30,12 +30,12 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
-TransX = 550;
-TransY = -479;
-TransZ = 522;
+TransX = 501;
+TransY = -540;
+TransZ = 450;
 
 % The rotation angles (same as in RS)
-theta = 0; 
+theta = -2.5; 
 gamma = 160; % 180 minus angle of the ramp
 tau = 0; 
 
@@ -111,21 +111,14 @@ newXYZcord = newXYZcord(1:end, 1:3);
 %% Interpolate and filter the data
 % Interpolate time
 timei = time(1):1:time(end);
-
-for i = 1: 1: length(predTime)
-    timePred(i) = time(i) - predTime(i);
-end
-
-timePredi = timePred(1):1:timePred(end);
-
-timePredi = timePredi(1:end-(length(timePredi) - length(timei)));
+timeu = unique(time);
 
 % Interpolate disc XYZ-cord
-newXYZcordi = interp1(time,newXYZcord(1:end-(length(time)-length(time)),:)...
+newXYZcordi = interp1(timeu,newXYZcord(1:end-(length(time)-length(timeu)),:)...
     ,timei,'pchip');
 
 % Interpolate robot XYZ-cord
-robotXYZi = interp1(time,robotXYZ(1:end-(length(time)-length(time)),:)...
+robotXYZi = interp1(timeu,robotXYZ(1:end-(length(time)-length(timeu)),:)...
     ,timei,'pchip');
 
 % Smooth discs position data
@@ -137,7 +130,6 @@ end
 for i = 1: 1: 3
     robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),100,'loess');
 end
-
 
 for i = 1: 1: size(newXYZcordi,1)
     PositionX(i) = (newXYZcordi(1,1)- newXYZcordi(i,1)).^2;
@@ -164,17 +156,17 @@ if plotPosition == 1
     figure1 = figure;
     plot(timei(plotFrom:end), newXYZcordi(plotFrom:size(newXYZcordi,1),cx)...
         ,'-r');hold on; 
-    plot(timePredi(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cx)...
+    plot(timei(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cx)...
         ,'-b'); hold on; 
 
     plot(timei(plotFrom:end), newXYZcordi(plotFrom:size(newXYZcordi,1),cy)...
         ,'-k'); hold on; 
-    plot(timePredi(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cy)...
+    plot(timei(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cy)...
         ,'-g');hold on;
 
     plot(timei(plotFrom:end), newXYZcordi(plotFrom:size(newXYZcordi,1),cz)...
         ,'-m'); hold on; 
-    plot(timePredi(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cz),'-c');
+    plot(timei(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cz),'-c');
     
     legend('Disc X position','Robot X position','Disc Y position',...
         'Robot Y position','Disc Z position','Robot Z position',...
@@ -192,7 +184,7 @@ end
 if plotMeanPos == 1
     figure2 = figure;
     plot(timei(plotFrom:end),distanceDisc(plotFrom:end),'r',...
-        timePredi(plotFrom:end), distanceRob(plotFrom:end),'b');
+        timei(plotFrom:end), distanceRob(plotFrom:end),'b');
     grid on;
     legend('Distance disc', 'Distance robot','Location',...
         'northoutside','Orientation','horizontal');
