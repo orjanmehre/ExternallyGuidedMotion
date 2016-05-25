@@ -162,8 +162,8 @@ namespace ExternalGuidedMotion
         {
             _time = _stopwatch.ElapsedMilliseconds;
             Positionfile.WriteLine(_time.ToString("0.00") + " " +
-                        Convert.ToInt32(XSensor).ToString("0.00") + " " +
-                        Convert.ToInt32(YSensor).ToString("0.00") + " " +
+                        Convert.ToInt32(_camera.X).ToString("0.00") + " " +
+                        Convert.ToInt32(_camera.Y).ToString("0.00") + " " +
                         Convert.ToInt32(ZSensor).ToString("0.00") + " " +
                         Convert.ToInt32(XRobot).ToString("0.00") + " " +
                         Convert.ToInt32(YRobot).ToString("0.00") + " " +

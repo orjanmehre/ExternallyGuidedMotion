@@ -25,6 +25,12 @@ namespace ExternalGuidedMotion
         private double _timeStamp;
         private double _seqNum;
         private double _prevY;
+        private double _prevPrevY;
+        private double[] _lastReadingsX;
+        private double[] _lastReadingsY;
+        private double[] tempArrayX;
+        private double _prevX;
+        private double _prevPrevX;
 
         public bool exitThread = false;
         public TextWriter ExecutionTime = new StreamWriter(@"..\...\ExecutionTime.txt", true);
@@ -40,6 +46,13 @@ namespace ExternalGuidedMotion
         public Camera(Predictor predictor)
         {
             this.predictor = predictor;
+            _lastReadingsX = new double[3] { 1, 1, 1};
+            _lastReadingsY = new double[3] { 1, 1, 1 };
+            tempArrayX = new double[3] { 1, 1, 1 };
+            _prevX = 1;
+            _prevPrevX = 1;
+            _prevY = 1;
+            _prevPrevY = 1;
         }
 
 
@@ -78,30 +91,44 @@ namespace ExternalGuidedMotion
                     Double.TryParse(tempY, out _y);
                     Double.TryParse(tempT, out _timeStamp);
                     Double.TryParse(tempS, out _seqNum);
-                    X = _x;
 
-                    Y = _y;
+                    medianFilter(_x, _y);
 
-                    if(Math.Abs(Y) > 10* Math.Abs(_y))
-                    {
-                        Y = _y;
-                    }
-                  
                     
+
                     TimeStamp = _timeStamp;
                     Seqnum = _seqNum;
 
                     predictor.NewPrediction(TimeStamp,X);
 
                     timeElapsed = TimeStamp;
-                    WriteExecutionTimeToFile();
-                    _prevY = Y;
+                    //WriteExecutionTimeToFile();
                 }
                 else
                 {
                     Console.WriteLine("No data from camera");
                 }
             }
+        }
+
+        private void medianFilter(double x, double y)
+        {
+
+            _lastReadingsX[0] = x;
+            _lastReadingsX[1] =_prevX;
+            _lastReadingsX[2] = _prevPrevX;
+            Array.Sort(_lastReadingsX);
+            X = _lastReadingsX[1];
+            _prevPrevX = _prevX;
+            _prevX = x;
+
+            _lastReadingsY[0] = y;
+            _lastReadingsY[1] = _prevY;
+            _lastReadingsY[2] = _prevPrevY;
+            Array.Sort(_lastReadingsY);
+            Y = _lastReadingsY[1];
+            _prevPrevY = _prevY;
+            _prevY = y;
         }
 
         public void StartCamera()

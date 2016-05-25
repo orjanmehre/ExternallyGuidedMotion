@@ -25,9 +25,9 @@ namespace ExternalGuidedMotion
         {
             _g = 0.00981;
             _fricKoeff = 0.5;
-            _angle = 30 * (Math.PI / 180);
+            _angle = 20 * (Math.PI / 180);
             _prevPos = 1;
-            _frames = 30;
+            _frames = 40;
             
         }
 
@@ -35,7 +35,6 @@ namespace ExternalGuidedMotion
         {
             _currentTime = time;
             _currentPosition = position;
-            checkCurrentPosition();
             velocity();
             _a = acceleration();
             predictedPosition();
@@ -43,17 +42,6 @@ namespace ExternalGuidedMotion
             _prevPos = _currentPosition;
         }
 
-        private void checkCurrentPosition()
-        {
-            if(_currentPosition > (_prevPos + 200))
-            {
-                _currentPosition = _prevPos;
-            }
-            else
-            {
-                _prevPos = _currentPosition;
-            }
-        }
 
         private double velocity()
         {
@@ -71,11 +59,6 @@ namespace ExternalGuidedMotion
         private void predictedPosition()
         {
             PredictedPosition = _currentPosition + _currentVelocity * _currentTime*_frames + (1/2)*(_a*Math.Pow(_currentTime*_frames,2));
-
-            if (PredictedPosition > 1150)
-            {
-                PredictedPosition = 1150;
-            }
         }
 
         private void predictedTime()
