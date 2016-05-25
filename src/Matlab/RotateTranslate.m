@@ -111,24 +111,24 @@ newXYZcord = newXYZcord(1:end, 1:3);
 %% Interpolate and filter the data
 % Interpolate time
 timei = time(1):1:time(end);
-timeu = unique(time);
+%timeu = unique(time);
 
 % Interpolate disc XYZ-cord
-newXYZcordi = interp1(timeu,newXYZcord(1:end-(length(time)-length(timeu)),:)...
-    ,timei,'pchip');
+newXYZcordi = interp1(time,newXYZcord(1:end,:)...
+    ,timei,'linear');
 
 % Interpolate robot XYZ-cord
-robotXYZi = interp1(timeu,robotXYZ(1:end-(length(time)-length(timeu)),:)...
-    ,timei,'pchip');
+robotXYZi = interp1(time,robotXYZ(1:end,:)...
+    ,timei,'linear');
 
 % Smooth discs position data
 for i = 1: 1: 3
-    newXYZcordi(1:end,i) = smooth(newXYZcordi(1:end,i),100,'loess');
+    newXYZcordi(1:end,i) = smooth(newXYZcordi(1:end,i),200,'loess');
 end
 
 % Smooth robot position data
 for i = 1: 1: 3
-    robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),100,'loess');
+    robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),200,'loess');
 end
 
 for i = 1: 1: size(newXYZcordi,1)
@@ -137,14 +137,14 @@ end
 
 %% Finding the distance which both the robot and disc have traveled. 
 
-% Find mean distance for the disc
+% Find distance traveled for the disc
 for i = 1: 1 : size(newXYZcordi,1)
         distanceDisc(i,1)= sqrt((newXYZcordi(1,1) - newXYZcordi(i,1)).^2 ...
         + (newXYZcordi(1,2) - newXYZcordi(i,2)).^2 ...
         + (newXYZcordi(1,3) - newXYZcordi(i,3)).^2);
 end
 
-% Find mean distance for the robot
+% Find distance traveled for the robot
 for i = 1: 1 : size(robotXYZi,1)
         distanceRob(i,1) = sqrt((robotXYZi(1,1) - robotXYZi(i,1)).^2 + ...
             (robotXYZi(1,2) - robotXYZi(i,2)).^2 ...
@@ -180,7 +180,7 @@ if plotPosition == 1
     saveas(figure1, filenamejpg);
 end
 
-%% Plot mean position
+%% Plot distance
 if plotMeanPos == 1
     figure2 = figure;
     plot(timei(plotFrom:end),distanceDisc(plotFrom:end),'r',...
@@ -217,7 +217,15 @@ if plotVelocity == 1
     velRY = diff(posRY);
     velZ = diff(posZ);
     velRZ = diff(posRZ);
-  
+    
+    velX = smooth(velX(1:end),100,'loess');
+    velY = smooth(velY(1:end),100,'loess');
+    velZ = smooth(velZ(1:end),100,'loess');
+    
+    velRX = smooth(velRX(1:end),100,'loess');
+    velRY = smooth(velRY(1:end),100,'loess');
+    velRZ = smooth(velRZ(1:end),100,'loess');
+
     figure3 = figure;
     plot(timei(plotFrom:end-1), velX(plotFrom:end),'r',...
         timei(plotFrom:end-1), velRX(plotFrom:end), 'b'); hold on;
@@ -239,20 +247,16 @@ end
 
     %% Plot mean velocity
     if plotMeanVelocity == 1
-%         meanVelDisc = sqrt((velX).^2+(velY).^2+(velZ).^2);
-%         meanVelRob = sqrt((velRX).^2+(velRY).^2+(velRZ).^2);
-
-meanVelDisc = diff(distanceDisc);
-meanVelRob = diff(distanceRob);
-
-        
+         velDisc = sqrt((velX).^2+(velY).^2+(velZ).^2);
+         velRob = sqrt((velRX).^2+(velRY).^2+(velRZ).^2);
+         
         figure4 = figure;
-        plot(timei(plotFrom:end-1), meanVelDisc(plotFrom:end),...
-            timei(plotFrom:end-1), meanVelRob(plotFrom:end)); 
+        plot(timei(plotFrom:end-1), velDisc(plotFrom:end),...
+            timei(plotFrom:end-1), velRob(plotFrom:end)); 
         xlabel('Time [ms]')
         ylabel('Velocity [mm/ms]')
         grid on; 
-        legend('Mean speed disc', 'Mean speed robot','Location',...
+        legend('Velocity disc', 'Velocity robot','Location',...
             'northoutside','Orientation','horizontal');
         filename = ['Plot/meanVelocity',name,'.eps'];
         saveas(figure4, filename);
@@ -268,6 +272,16 @@ meanVelRob = diff(distanceRob);
         acelRY = diff(velRY);
         acelZ = diff(velY);
         acelRZ = diff(velZ);
+        
+        
+        acelX = smooth(acelX(1:end),200,'lowess');
+        acelY = smooth(acelY(1:end),200,'lowess');
+        acelZ = smooth(acelZ(1:end),200,'lowess');
+        
+        acelRX = smooth(acelRX(1:end),200,'lowess');
+        acelRY = smooth(acelRY(1:end),200,'lowess');
+        acelRZ = smooth(acelRZ(1:end),200,'lowess');
+
         
         figure5 = figure;
         plot(timei(plotFrom:end-2), acelX(plotFrom:end),'r',...
@@ -290,22 +304,18 @@ meanVelRob = diff(distanceRob);
         saveas(figure5, filenamejpg);
     end
     
-    %% Plot mean acceleration
+    %% Plot acceleration
     if plotMeanAcceleration == 1
-%         meanAccelDisc = sqrt((acelX).^2 + (acelY).^2 + (acelZ).^2);
-%         meanAccelRob = sqrt((acelRX).^2 + (acelRY).^2 + (acelRZ).^2);
+         accelDisc = sqrt((acelX).^2 + (acelY).^2 + (acelZ).^2);
+         accelRob = sqrt((acelRX).^2 + (acelRY).^2 + (acelRZ).^2);
 
-         meanAccelDisc = diff(meanVelDisc); 
-         meanAccelRob = diff(meanVelRob);
-
-        
         figure6 = figure;
-        plot(timei(plotFrom:end-2), meanAccelDisc(plotFrom:end),...
-            timei(plotFrom:end-2), meanAccelRob(plotFrom:end));
+        plot(timei(plotFrom:end-2), accelDisc(plotFrom:end),...
+            timei(plotFrom:end-2), accelRob(plotFrom:end));
         xlabel('Time [ms]')
         ylabel('Acceleration [mm/ms^2]')
         grid on; 
-        legend('Mean acceleration disc', 'Mean acceleration robot',...
+        legend('Acceleration disc', 'Acceleration robot',...
             'Location','northoutside','Orientation','horizontal');
         filename = ['Plot/meanAcceleration',name,'.eps'];
         saveas(figure6, filename);
