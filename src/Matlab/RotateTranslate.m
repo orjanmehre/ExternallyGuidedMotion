@@ -30,20 +30,20 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
-TransX = 178;
-TransY = -632;
-TransZ = 666;
+TransX = 550;
+TransY = -479;
+TransZ = 522;
 
 % The rotation angles (same as in RS)
-theta = -30; 
-gamma = 150; % 180 minus angle of the ramp
+theta = 0; 
+gamma = 160; % 180 minus angle of the ramp
 tau = 0; 
 
 %Open file
 fileId = fopen('position.txt');
 
 %Store file content in a cell
-C = textscan(fileId, '%s %s %s %s %s %s %s');
+C = textscan(fileId, '%s %s %s %s %s %s %s %s');
 fclose(fileId);
 
 %% Extract the position data and convert from string to double
@@ -70,11 +70,17 @@ for j = 5: 1: 7
     end
 end
 
-
 for i = 1 : 1 : size(C{1,7},1)
     sentSensorXYZ(i, 4) = 1;
 end
 
+% Extract how far ahead the predictor i projecting in time
+for i = 1: 1: size(C{1,8},1)
+    tempPredTime = C{1,8}{i,1}; 
+    predTime(i) = str2double(strrep(tempPredTime, ',' , '.'));
+end
+
+%% Transform the discs position data to the robots cord.system
 %Rotation matrices
 rotZ = [cosd(theta), -sind(theta), 0, 0 ; sind(theta), cosd(theta), 0,0;...
     0, 0, 1, 0 ; 0, 0, 0, 1];
@@ -102,18 +108,24 @@ end
 % Remove the once from column 4
 newXYZcord = newXYZcord(1:end, 1:3);
 
+%% Interpolate and filter the data
 % Interpolate time
 timei = time(1):1:time(end);
 
-timeu = unique(time);
+for i = 1: 1: length(predTime)
+    timePred(i) = time(i) - predTime(i);
+end
 
+timePredi = timePred(1):1:timePred(end);
+
+timePredi = timePredi(1:end-(length(timePredi) - length(timei)));
 
 % Interpolate disc XYZ-cord
-newXYZcordi = interp1(timeu,newXYZcord(1:end-(length(time)-length(timeu)),:)...
+newXYZcordi = interp1(time,newXYZcord(1:end-(length(time)-length(time)),:)...
     ,timei,'pchip');
 
 % Interpolate robot XYZ-cord
-robotXYZi = interp1(timeu,robotXYZ(1:end-(length(time)-length(timeu)),:)...
+robotXYZi = interp1(time,robotXYZ(1:end-(length(time)-length(time)),:)...
     ,timei,'pchip');
 
 % Smooth discs position data
@@ -131,6 +143,7 @@ for i = 1: 1: size(newXYZcordi,1)
     PositionX(i) = (newXYZcordi(1,1)- newXYZcordi(i,1)).^2;
 end
 
+%% Finding the distance which both the robot and disc have traveled. 
 
 % Find mean distance for the disc
 for i = 1: 1 : size(newXYZcordi,1)
@@ -149,19 +162,19 @@ end
 %% Plot position in XYZ
 if plotPosition == 1
     figure1 = figure;
-    plot(time(plotFrom:end), newXYZcord(plotFrom:size(newXYZcord,1),cx)...
+    plot(timei(plotFrom:end), newXYZcordi(plotFrom:size(newXYZcordi,1),cx)...
         ,'-r');hold on; 
-    plot(time(plotFrom:end), robotXYZ(plotFrom:size(robotXYZ,1),cx)...
+    plot(timePredi(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cx)...
         ,'-b'); hold on; 
 
-    plot(time(plotFrom:end), newXYZcord(plotFrom:size(newXYZcord,1),cy)...
+    plot(timei(plotFrom:end), newXYZcordi(plotFrom:size(newXYZcordi,1),cy)...
         ,'-k'); hold on; 
-    plot(time(plotFrom:end), robotXYZ(plotFrom:size(robotXYZ,1),cy)...
+    plot(timePredi(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cy)...
         ,'-g');hold on;
 
-    plot(time(plotFrom:end), newXYZcord(plotFrom:size(newXYZcord,1),cz)...
+    plot(timei(plotFrom:end), newXYZcordi(plotFrom:size(newXYZcordi,1),cz)...
         ,'-m'); hold on; 
-    plot(time(plotFrom:end), robotXYZ(plotFrom:size(robotXYZ,1),cz),'-c');
+    plot(timePredi(plotFrom:end), robotXYZi(plotFrom:size(robotXYZi,1),cz),'-c');
     
     legend('Disc X position','Robot X position','Disc Y position',...
         'Robot Y position','Disc Z position','Robot Z position',...
@@ -179,7 +192,7 @@ end
 if plotMeanPos == 1
     figure2 = figure;
     plot(timei(plotFrom:end),distanceDisc(plotFrom:end),'r',...
-        timei(plotFrom:end), distanceRob(plotFrom:end),'b');
+        timePredi(plotFrom:end), distanceRob(plotFrom:end),'b');
     grid on;
     legend('Distance disc', 'Distance robot','Location',...
         'northoutside','Orientation','horizontal');
