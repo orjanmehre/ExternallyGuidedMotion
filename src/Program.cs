@@ -149,7 +149,7 @@ namespace ExternalGuidedMotion
 
         public void CameraSetPos()
         {
-            X = _predictor.PredictedPosition;
+            X = _camera.X;
             Y = - _camera.Y;
             Z = 0;
             _seqNum = _camera.Seqnum;
