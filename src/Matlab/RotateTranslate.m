@@ -30,12 +30,12 @@ cz = 3;
 plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
-TransX = 501;
-TransY = -540;
-TransZ = 450;
+TransX = 437;
+TransY = -529;
+TransZ = 445;
 
 % The rotation angles (same as in RS)
-theta = -2.5; 
+theta = 0; 
 gamma = 160; % 180 minus angle of the ramp
 tau = 0; 
 
@@ -60,6 +60,10 @@ for j = 2: 1: 4
             sentSensorXYZ(i,j-1) = str2double(strrep(tempSentSensorXYZ,...
                 ',' , '.')); 
     end
+end
+
+for i = 1: 1 : size(C{1,7},1)
+    sentSensorXYZ(i,2) =  -sentSensorXYZ(i,2);
 end
 
 % Extract robot position
