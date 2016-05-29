@@ -122,18 +122,18 @@ robotXYZi = interp1(time,robotXYZ(1:end,:)...
     ,timei,'linear');
 
 % Smooth discs position data
-for i = 1: 1: 3
-    newXYZcordi(1:end,i) = smooth(newXYZcordi(1:end,i),200,'loess');
-end
-
-% Smooth robot position data
-for i = 1: 1: 3
-    robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),200,'loess');
-end
-
-for i = 1: 1: size(newXYZcordi,1)
-    PositionX(i) = (newXYZcordi(1,1)- newXYZcordi(i,1)).^2;
-end
+% for i = 1: 1: 3
+%     newXYZcordi(1:end,i) = smooth(newXYZcordi(1:end,i),200,'loess');
+% end
+% 
+% % Smooth robot position data
+% for i = 1: 1: 3
+%     robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),200,'loess');
+% end
+% 
+% for i = 1: 1: size(newXYZcordi,1)
+%     PositionX(i) = (newXYZcordi(1,1)- newXYZcordi(i,1)).^2;
+% end
 
 %% Finding the distance which both the robot and disc have traveled. 
 

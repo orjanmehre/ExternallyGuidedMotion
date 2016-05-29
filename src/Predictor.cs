@@ -24,7 +24,7 @@ namespace ExternalGuidedMotion
         public Predictor()
         {
             _g = 0.00981;
-            _fricKoeff = 0.5;
+            _fricKoeff = 0.3;
             _angle = 20 * (Math.PI / 180);
             _prevPos = 1;
             _frames = 40;
@@ -52,7 +52,7 @@ namespace ExternalGuidedMotion
 
         private double acceleration()
         {
-            _a = -(_g * Math.Sin(_angle)) - (_fricKoeff * _g * Math.Cos(_angle));
+            _a = (_g * Math.Sin(_angle)) - (_fricKoeff * _g * Math.Cos(_angle));
             return _a;
         }
 
