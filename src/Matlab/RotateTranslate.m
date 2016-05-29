@@ -10,8 +10,8 @@ the disc and robot.
 %}
 
 %%
-clc;
-clear; 
+ clc;
+ clear; 
 name = 'v100';
 
 %% Choose plot
@@ -31,7 +31,7 @@ plotFrom = 1;
 
 % x, y and z coordinates for origo in the new cord.system.
 TransX = 437;
-TransY = -529;
+TransY = -527;
 TransZ = 445;
 
 % The rotation angles (same as in RS)
@@ -126,18 +126,18 @@ robotXYZi = interp1(time,robotXYZ(1:end,:)...
     ,timei,'linear');
 
 % Smooth discs position data
-% for i = 1: 1: 3
-%     newXYZcordi(1:end,i) = smooth(newXYZcordi(1:end,i),200,'loess');
-% end
-% 
-% % Smooth robot position data
-% for i = 1: 1: 3
-%     robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),200,'loess');
-% end
-% 
-% for i = 1: 1: size(newXYZcordi,1)
-%     PositionX(i) = (newXYZcordi(1,1)- newXYZcordi(i,1)).^2;
-% end
+for i = 1: 1: 3
+    newXYZcordi(1:end,i) = smooth(newXYZcordi(1:end,i),200,'loess');
+end
+
+% Smooth robot position data
+for i = 1: 1: 3
+    robotXYZi(1:end,i) = smooth(robotXYZi(1:end,i),200,'loess');
+end
+
+for i = 1: 1: size(newXYZcordi,1)
+    PositionX(i) = (newXYZcordi(1,1)- newXYZcordi(i,1)).^2;
+end
 
 %% Finding the distance which both the robot and disc have traveled. 
 
