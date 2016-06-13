@@ -10,8 +10,8 @@ the disc and robot.
 %}
 
 %%
- clc;
- clear; 
+clc;
+clear; 
 name = 'v100';
 
 %% Choose plot
@@ -115,7 +115,6 @@ newXYZcord = newXYZcord(1:end, 1:3);
 %% Interpolate and filter the data
 % Interpolate time
 timei = time(1):1:time(end);
-%timeu = unique(time);
 
 % Interpolate disc XYZ-cord
 newXYZcordi = interp1(time,newXYZcord(1:end,:)...
@@ -143,16 +142,16 @@ end
 
 % Find distance traveled for the disc
 for i = 1: 1 : size(newXYZcordi,1)
-        distanceDisc(i,1)= sqrt((newXYZcordi(1,1) - newXYZcordi(i,1)).^2 ...
-        + (newXYZcordi(1,2) - newXYZcordi(i,2)).^2 ...
-        + (newXYZcordi(1,3) - newXYZcordi(i,3)).^2);
+        distanceDisc(i,1)= sqrt((TransX - newXYZcordi(i,1)).^2 ...
+        + (TransY - newXYZcordi(i,2)).^2 ...
+        + (TransZ - newXYZcordi(i,3)).^2);
 end
 
 % Find distance traveled for the robot
 for i = 1: 1 : size(robotXYZi,1)
-        distanceRob(i,1) = sqrt((robotXYZi(1,1) - robotXYZi(i,1)).^2 + ...
-            (robotXYZi(1,2) - robotXYZi(i,2)).^2 ...
-            + (robotXYZi(1,3) - robotXYZi(i,3)).^2);       
+        distanceRob(i,1) = sqrt((TransX - robotXYZi(i,1)).^2 + ...
+            (TransY - robotXYZi(i,2)).^2 ...
+            + (TransZ - robotXYZi(i,3)).^2);       
 end
 
 %% Plot position in XYZ
@@ -221,15 +220,7 @@ if plotVelocity == 1
     velRY = diff(posRY);
     velZ = diff(posZ);
     velRZ = diff(posRZ);
-    
-    velX = smooth(velX(1:end),100,'loess');
-    velY = smooth(velY(1:end),100,'loess');
-    velZ = smooth(velZ(1:end),100,'loess');
-    
-    velRX = smooth(velRX(1:end),100,'loess');
-    velRY = smooth(velRY(1:end),100,'loess');
-    velRZ = smooth(velRZ(1:end),100,'loess');
-
+  
     figure3 = figure;
     plot(timei(plotFrom:end-1), velX(plotFrom:end),'r',...
         timei(plotFrom:end-1), velRX(plotFrom:end), 'b'); hold on;
@@ -249,14 +240,14 @@ if plotVelocity == 1
     saveas(figure3, filenamejpg);
 end
 
-    %% Plot mean velocity
+    %% Plot velocity
     if plotMeanVelocity == 1
          velDisc = sqrt((velX).^2+(velY).^2+(velZ).^2);
          velRob = sqrt((velRX).^2+(velRY).^2+(velRZ).^2);
          
         figure4 = figure;
-        plot(timei(plotFrom:end-1), velDisc(plotFrom:end),...
-            timei(plotFrom:end-1), velRob(plotFrom:end)); 
+        plot(timei(plotFrom:end-1), velDisc(plotFrom:end),'r',...
+            timei(plotFrom:end-1), velRob(plotFrom:end), 'b'); 
         xlabel('Time [ms]')
         ylabel('Velocity [mm/ms]')
         grid on; 
@@ -276,17 +267,7 @@ end
         acelRY = diff(velRY);
         acelZ = diff(velY);
         acelRZ = diff(velZ);
-        
-        
-        acelX = smooth(acelX(1:end),200,'lowess');
-        acelY = smooth(acelY(1:end),200,'lowess');
-        acelZ = smooth(acelZ(1:end),200,'lowess');
-        
-        acelRX = smooth(acelRX(1:end),200,'lowess');
-        acelRY = smooth(acelRY(1:end),200,'lowess');
-        acelRZ = smooth(acelRZ(1:end),200,'lowess');
 
-        
         figure5 = figure;
         plot(timei(plotFrom:end-2), acelX(plotFrom:end),'r',...
             timei(plotFrom:end-2), acelRX(plotFrom:end),'b'); hold on;
@@ -314,8 +295,8 @@ end
          accelRob = sqrt((acelRX).^2 + (acelRY).^2 + (acelRZ).^2);
 
         figure6 = figure;
-        plot(timei(plotFrom:end-2), accelDisc(plotFrom:end),...
-            timei(plotFrom:end-2), accelRob(plotFrom:end));
+        plot(timei(plotFrom:end-2), accelDisc(plotFrom:end),'r',...
+            timei(plotFrom:end-2), accelRob(plotFrom:end), 'b');
         xlabel('Time [ms]')
         ylabel('Acceleration [mm/ms^2]')
         grid on; 
