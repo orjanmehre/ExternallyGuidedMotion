@@ -1,10 +1,10 @@
-## Matlab folder
+## All code written in C# is placed under the solution ExternalGuidedMotion
 
-In the Matlab folder there is a script that transform the discs position from the workobjects coordninate system to the coordinate system of the robot base.
+## Matlab folder
+In the Matlab folder there is a script that transform the disc's position from the workobject's coordninate system to the coordinate system of the robot's base.
 
 ## Robotstudio folder
 Here are the program files for the program in Robotstudio. Just extract the "pack-and go" file to unpack the full program.
 
 ## Cognex folder
-.job file for the program made in In-Sight Explorer. This is the vision program for the Cognex 5400 smart camera
-
+Contains the program written for the Cognex smart camera to detect the disc.
