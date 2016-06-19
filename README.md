@@ -1,16 +1,14 @@
 # ExternallyGuidedMotion
-
-This program combined with a program written i RAPID will be used to pick up a ball rolling down a ramp using a ABB robotic arm. 
-To detect the ball a camera is used, so this program detect and predict the trajectory of the ball. 
-The position data of the ball is sent over to the RAPID program using UDPuc packets. 
-
+This solution can be used to pick up a disc sliding down a ramp using an industrial ABB robotic arm with EGM implemented.
+As a sensor a Cognex In-Sight 5400 smart camera was used. This camera sent the discs position over to the program written in C#. 
+All tests were run on an IRB140 industrial robotic arm. 
+ 
 ## Matlab folder
-
-In the Matlab folder there is a script that transform the discs position from the workobjects coordninate system to the coordinate system of the robot base.
+In the Matlab folder there is a script that transform the disc's position from the workobject's coordninate system to the coordinate system of the robot's base.
 
 ## Robotstudio folder
 Here are the program files for the program in Robotstudio. Just extract the "pack-and go" file to unpack the full program.
 
 ## Cognex folder
-.job file for the program made in In-Sight Explorer. This is the vision program for the Cognex 5400 smart camera
+Contains the program written for the Cognex smart camera to detect the disc.
 
