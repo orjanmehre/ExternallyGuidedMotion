@@ -1,4 +1,5 @@
-## All code written in C# is placed under the solution ExternalGuidedMotion
+## C-Sharp
+All code written in C# is placed under the solution ExternalGuidedMotion.sln.
 
 ## Matlab folder
 In the Matlab folder there is a script that transform the disc's position from the workobject's coordninate system to the coordinate system of the robot's base.
